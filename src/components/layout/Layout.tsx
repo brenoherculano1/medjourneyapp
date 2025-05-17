@@ -13,19 +13,18 @@ interface LayoutProps {
 
 const UsaFlagIcon = (props: { className?: string }) => (
   <svg viewBox="0 0 32 32" width="1em" height="1em" className={props.className} style={{ display: 'inline' }}>
-    <rect width="32" height="32" rx="6" fill="#fff" />
-    <rect width="32" height="32" rx="6" fill="#b22234" />
+    <rect width="32" height="32" rx="6" fill="#fff"/>
+    <rect width="32" height="32" rx="6" fill="#b22234"/>
     <g>
-      <rect y="2.46" width="32" height="2.46" fill="#fff" />
-      <rect y="7.38" width="32" height="2.46" fill="#fff" />
-      <rect y="12.3" width="32" height="2.46" fill="#fff" />
-      <rect y="17.22" width="32" height="2.46" fill="#fff" />
-      <rect y="22.14" width="32" height="2.46" fill="#fff" />
-      <rect y="27.06" width="32" height="2.46" fill="#fff" />
+      {[2.46, 7.38, 12.3, 17.22, 22.14, 27.06].map((y, i) => (
+        <rect key={i} y={y} width="32" height="2.46" fill="#fff" />
+      ))}
     </g>
-    <rect width="14" height="14" fill="#3c3b6e" />
+    <rect width="14" height="14" fill="#3c3b6e"/>
     <g fill="#fff">
-      {[...Array(30)].map((_, i) => <circle key={i} cx={(i % 5) * 2.7 + 2} cy={Math.floor(i / 5) * 1.4 + 2} r="0.7" />)}
+      {[...Array(30)].map((_, i) => (
+        <circle key={i} cx={(i % 5) * 2.7 + 2} cy={Math.floor(i / 5) * 1.4 + 2} r="0.7" />
+      ))}
     </g>
   </svg>
 );
