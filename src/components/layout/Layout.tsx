@@ -1,6 +1,6 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+""import React, { ReactNode, useEffect, useState } from 'react';
 import {
-  Home, ClipboardList, MessageSquare, Plane, CreditCard, User, Menu, X, LogOut, BookOpen
+  Home, ClipboardList, MessageSquare, Plane, CreditCard, User, Menu, LogOut, BookOpen
 } from 'lucide-react';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { useAppContext } from '../../contexts/AppContext';
@@ -63,11 +63,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {sidebarOpen && <div className="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 md:hidden" onClick={toggleSidebar} />}
 
       <div className={`flex flex-col z-50 bg-white shadow-lg transition-all duration-300 ease-in-out ${sidebarOpen ? 'w-64' : 'w-16'} md:w-64`}>
-        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
+        <div className="flex items-center h-16 px-4 border-b border-gray-200">
           <span className="text-blue-600 font-bold text-xl">MedJourney</span>
-          <button onClick={toggleSidebar} className="md:hidden">
-            <X size={20} className="text-gray-500" />
-          </button>
         </div>
 
         <div className="flex-1 flex flex-col overflow-y-auto pt-5 pb-4">
