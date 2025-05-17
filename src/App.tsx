@@ -7,15 +7,17 @@ import Pricing from './pages/Pricing';
 import Profile from './pages/Profile';
 import USMLE from './pages/USMLE';
 import StrategicReviewPage from './pages/StrategicReviewPage';
-import { useNavigation } from './contexts/NavigationContext';
 import StudyLog from './pages/StudyLog';
-import Login from './pages/Login'; // <- certifique-se de ter criado essa página
+import Login from './pages/Login';
 
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from './firebase'; // <- CORREÇÃO AQUI
+import { auth } from './firebase';
 
-function App() {
+import { NavigationProvider, useNavigation } from './contexts/NavigationContext';
+import { AppProvider } from './contexts/AppContext';
+
+function InnerApp() {
   const { currentPage } = useNavigation();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
 
@@ -54,13 +56,23 @@ function App() {
       case 'studylog':
         return <StudyLog />;
       case 'strategicreview':
-        return <Dashboard />;
+        return <StrategicReviewPage />;
       default:
         return <Dashboard />;
     }
   };
 
   return <Layout>{renderPage()}</Layout>;
+}
+
+function App() {
+  return (
+    <NavigationProvider>
+      <AppProvider>
+        <InnerApp />
+      </AppProvider>
+    </NavigationProvider>
+  );
 }
 
 export default App;
