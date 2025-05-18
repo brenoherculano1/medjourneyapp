@@ -62,6 +62,28 @@ const StudyLog: React.FC = () => {
   const last30 = getLastNDays(30);
   const weekLog = log.filter(l => last7.includes(l.date));
   const monthLog = log.filter(l => last30.includes(l.date));
+  // Lógica de streak consecutivo mais recente
+  const sortedLog = [...log].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  let streakCounter = 0;
+  if (sortedLog.length > 0) {
+    let lastDate = new Date(sortedLog[sortedLog.length - 1].date);
+    streakCounter = 1;
+    for (let i = sortedLog.length - 2; i >= 0; i--) {
+      const currentDate = new Date(sortedLog[i].date);
+      const diff = (lastDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24);
+      if (diff === 1) {
+        streakCounter++;
+        lastDate = currentDate;
+      } else if (diff > 1) {
+        break;
+      }
+    }
+    // Se o último registro não for hoje, streak só vai até o último dia consecutivo
+    const todayStr = new Date().toISOString().slice(0, 10);
+    if (sortedLog[sortedLog.length - 1].date !== todayStr) {
+      // streakCounter permanece, mas não soma o dia de hoje
+    }
+  }
   const streak = weekLog.length === 7;
   const maxStreak = log.reduce((max, _, i, arr) => {
     let count = 1;
@@ -148,7 +170,7 @@ const StudyLog: React.FC = () => {
           <h2 className="font-semibold text-lg mb-2">Streak atual</h2>
           <div className="flex items-center gap-2">
             <span className="text-2xl">🔥</span>
-            <span className="text-lg font-bold">{streak ? weekLog.length : 0} dias</span>
+            <span className="text-lg font-bold">{streakCounter} dias</span>
           </div>
         </div>
         <div>
