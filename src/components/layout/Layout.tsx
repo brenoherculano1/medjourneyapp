@@ -4,7 +4,7 @@ import {
 } from 'lucide-react';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { useAppContext } from '../../contexts/AppContext';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../../firebase';
 
 interface LayoutProps {
@@ -47,6 +47,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const closeSidebar = () => setSidebarOpen(false);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigateTo('dashboard'); // força a navegação para uma página segura
+      // O App.tsx já renderiza <Login /> se não estiver logado
+    } catch (error) {
+      // Silencia erros para não exibir nada ao usuário
+    }
+  };
 
   return (
     <div className="h-screen flex overflow-hidden bg-gray-50">
@@ -98,7 +108,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
         {/* Usuário e logout */}
         <div className="border-t border-gray-200 p-4">
-          <button className="flex items-center text-xs text-gray-500 hover:text-gray-700">
+          <button onClick={handleLogout} className="flex items-center text-xs text-gray-500 hover:text-gray-700">
             <LogOut size={14} className="mr-1" />
             Sair
           </button>
