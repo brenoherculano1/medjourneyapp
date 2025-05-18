@@ -1,6 +1,6 @@
-""import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import {
-  Home, ClipboardList, MessageSquare, Plane, CreditCard, User, Menu, LogOut, BookOpen
+  Home, ClipboardList, MessageSquare, Plane, CreditCard, User, Menu, LogOut, BookOpen, X
 } from 'lucide-react';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { useAppContext } from '../../contexts/AppContext';
@@ -57,16 +57,36 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   ];
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  const closeSidebar = () => setSidebarOpen(false);
 
   return (
     <div className="h-screen flex overflow-hidden bg-gray-50">
-      {sidebarOpen && <div className="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 md:hidden" onClick={toggleSidebar} />}
+      {/* Overlay para mobile quando sidebar aberta */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 md:hidden" onClick={closeSidebar} />
+      )}
 
-      <div className={`flex flex-col z-50 bg-white shadow-lg transition-all duration-300 ease-in-out ${sidebarOpen ? 'w-64' : 'w-16'} md:w-64`}>
-        <div className="flex items-center h-16 px-4 border-b border-gray-200">
-          <span className="text-blue-600 font-bold text-xl">MedJourney</span>
+      {/* Sidebar */}
+      <div
+        className={`fixed z-50 inset-y-0 left-0 flex flex-col bg-white shadow-lg transition-transform duration-300 ease-in-out
+          w-64 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:static md:translate-x-0 md:w-64 md:flex
+        `}
+      >
+        {/* Topo da sidebar */}
+        <div className="flex items-center h-16 px-4 border-b border-gray-200 relative">
+          <span className="text-blue-600 font-bold text-xl mx-auto md:mx-0">MedJourney</span>
+          {/* Botão X só no mobile e quando aberta */}
+          {sidebarOpen && (
+            <button
+              className="absolute right-4 md:hidden text-gray-500 hover:text-gray-700"
+              onClick={closeSidebar}
+              aria-label="Fechar menu"
+            >
+              <X size={24} />
+            </button>
+          )}
         </div>
-
+        {/* Navegação */}
         <div className="flex-1 flex flex-col overflow-y-auto pt-5 pb-4">
           <nav className="mt-5 flex-1 px-2 space-y-1">
             {navigationItems.map((item) => {
@@ -76,7 +96,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   key={item.name}
                   onClick={() => {
                     navigateTo(item.page);
-                    setSidebarOpen(false);
+                    closeSidebar();
                   }}
                   className={`group flex items-center px-2 py-2 text-base font-medium rounded-md w-full ${isActive ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
                 >
@@ -87,7 +107,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             })}
           </nav>
         </div>
-
+        {/* Usuário e logout */}
         <div className="border-t border-gray-200 p-4">
           <div className="flex items-center">
             <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">{firstName}</p>
@@ -99,20 +119,32 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
       </div>
 
+      {/* Conteúdo principal */}
       <div className="flex flex-col flex-1 overflow-hidden">
-        <div className="relative z-10 flex-shrink-0 flex h-16 bg-white shadow">
-          <button onClick={toggleSidebar} className="px-4 md:hidden border-r border-gray-200 text-gray-500">
-            <Menu size={20} />
+        {/* Navbar/topbar */}
+        <div className="relative z-10 flex-shrink-0 flex h-16 bg-white shadow items-center justify-between px-4 md:px-8">
+          {/* Botão menu hambúrguer só no mobile */}
+          <button
+            onClick={toggleSidebar}
+            className="md:hidden text-gray-500 focus:outline-none"
+            aria-label="Abrir menu"
+          >
+            <Menu size={28} />
           </button>
-          <div className="flex-1 px-4 flex items-center justify-between">
+          {/* Logo centralizado no mobile, alinhado à esquerda no desktop */}
+          <div className="flex-1 flex justify-center md:justify-start">
+            <span className="text-blue-600 font-bold text-xl">MedJourney</span>
+          </div>
+          {/* Itens só no desktop */}
+          <div className="hidden md:flex items-center space-x-4">
             <span className="text-base font-medium text-gray-700">Seja Bem-vindo!</span>
             {user.subscription && (
               <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Premium</span>
             )}
           </div>
         </div>
-
-        <main className="flex-1 relative overflow-y-auto focus:outline-none p-4 md:p-6 bg-gray-50">
+        {/* Conteúdo */}
+        <main className="flex-1 relative overflow-y-auto focus:outline-none p-2 sm:p-4 md:p-6 bg-gray-50">
           {children}
         </main>
       </div>
