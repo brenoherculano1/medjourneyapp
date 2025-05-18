@@ -33,17 +33,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { currentPage, navigateTo } = useNavigation();
   const { user } = useAppContext();
-  const [firstName, setFirstName] = useState("Usuário");
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      if (firebaseUser?.displayName) {
-        const name = firebaseUser.displayName.split(" ")[0];
-        setFirstName(name);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
 
   const navigationItems = [
     { name: 'Dashboard', page: 'dashboard' as const, icon: Home },
@@ -109,13 +98,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
         {/* Usuário e logout */}
         <div className="border-t border-gray-200 p-4">
-          <div className="flex items-center">
-            <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">{firstName}</p>
-            <button className="ml-auto flex items-center text-xs text-gray-500 hover:text-gray-700">
-              <LogOut size={14} className="mr-1" />
-              Sair
-            </button>
-          </div>
+          <button className="flex items-center text-xs text-gray-500 hover:text-gray-700">
+            <LogOut size={14} className="mr-1" />
+            Sair
+          </button>
         </div>
       </div>
 
