@@ -10,6 +10,7 @@ import StrategicReviewPage from './pages/StrategicReviewPage';
 import StudyLog from './pages/StudyLog';
 import DailyStudyLog from './pages/DailyStudyLog';
 import Login from './pages/Login';
+import IMGResidencyNavigator from './pages/IMGResidencyNavigator';
 
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -60,6 +61,8 @@ function InnerApp() {
         return <DailyStudyLog />;
       case 'strategicreview':
         return <StrategicReviewPage />;
+      case 'imgnavigator':
+        return <IMGResidencyNavigator />;
       default:
         return <Dashboard />;
     }

@@ -10,6 +10,7 @@ type Page =
   | 'usmle'
   | 'studylog'
   | 'dailylog'
+  | 'imgnavigator'
   | 'strategicreview';
 
 interface NavigationContextType {

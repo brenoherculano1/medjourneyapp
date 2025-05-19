@@ -355,21 +355,21 @@ const StudyLog: React.FC = () => {
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className="h-5 w-5 text-gray-400" />
           </div>
-          <input
+              <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search topics or systems..."
             className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md leading-5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
+              />
+            </div>
 
         {/* Stats Overview */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
             <div className="text-sm font-medium text-blue-800 dark:text-blue-200">Total Topics</div>
             <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">{stats.total}</div>
-          </div>
+            </div>
           <div className="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg">
             <div className="text-sm font-medium text-green-800 dark:text-green-200">Completed</div>
             <div className="text-2xl font-bold text-green-900 dark:text-green-100">{stats.completed}</div>
@@ -377,7 +377,7 @@ const StudyLog: React.FC = () => {
           <div className="bg-orange-50 dark:bg-orange-900/30 p-4 rounded-lg">
             <div className="text-sm font-medium text-orange-800 dark:text-orange-200">In Progress</div>
             <div className="text-2xl font-bold text-orange-900 dark:text-orange-100">{stats.inProgress}</div>
-          </div>
+                </div>
           <div className="bg-purple-50 dark:bg-purple-900/30 p-4 rounded-lg">
             <div className="text-sm font-medium text-purple-800 dark:text-purple-200">Mastered</div>
             <div className="text-2xl font-bold text-purple-900 dark:text-purple-100">{stats.mastered}</div>
@@ -468,9 +468,9 @@ const StudyLog: React.FC = () => {
                           <option value="In Progress">In Progress</option>
                           <option value="Mastered">Mastered</option>
                         </select>
-                      </div>
-                    ))}
-                  </div>
+              </div>
+            ))}
+          </div>
                 )}
               </div>
             );

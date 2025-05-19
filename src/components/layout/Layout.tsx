@@ -40,6 +40,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: 'Entrevistas', page: 'interviews' as const, icon: MessageSquare },
     { name: 'Vistos & Viagem', page: 'visaPlanning' as const, icon: Plane },
     { name: 'USMLE', page: 'usmle' as const, icon: UsaFlagIcon },
+    { name: 'IMG Residency Navigator', page: 'imgnavigator' as const, icon: User },
     { name: 'System Tracker', page: 'studylog' as const, icon: BookOpen },
     { name: 'Study Log', page: 'dailylog' as const, icon: ClipboardList },
     { name: 'Assinatura', page: 'pricing' as const, icon: CreditCard },
@@ -91,6 +92,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <nav className="mt-5 flex-1 px-2 space-y-1">
             {navigationItems.map((item) => {
               const isActive = currentPage === item.page;
+              const isImgNavigator = item.name === 'IMG Residency Navigator';
               return (
                 <button
                   key={item.name}
@@ -98,10 +100,22 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     navigateTo(item.page);
                     closeSidebar();
                   }}
-                  className={`group flex items-center px-2 py-2 text-base font-medium rounded-md w-full ${isActive ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+                  className={
+                    isImgNavigator && isActive
+                      ? `group flex items-center gap-2 justify-center px-2 py-2 rounded-xl font-semibold text-blue-700 bg-gradient-to-r from-blue-100 to-blue-200 shadow-md w-full transition-all duration-200 text-base`
+                      : `group flex items-center px-2 py-2 text-base font-medium rounded-md w-full ${isActive ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`
+                  }
                 >
-                  <item.icon className={`mr-3 h-5 w-5 ${isActive ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-500'}`} />
-                  {item.name}
+                  <item.icon className={
+                    isImgNavigator && isActive
+                      ? 'h-5 w-5 text-blue-700'
+                      : `mr-3 h-5 w-5 ${isActive ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-500'}`
+                  } />
+                  {isImgNavigator && isActive ? (
+                    <span className="text-base font-semibold">IMG Residency Navigator</span>
+                  ) : (
+                    item.name
+                  )}
                 </button>
               );
             })}
