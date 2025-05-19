@@ -8,6 +8,7 @@ import Profile from './pages/Profile';
 import USMLE from './pages/USMLE';
 import StrategicReviewPage from './pages/StrategicReviewPage';
 import StudyLog from './pages/StudyLog';
+import DailyStudyLog from './pages/DailyStudyLog';
 import Login from './pages/Login';
 
 import { useEffect, useState } from 'react';
@@ -55,6 +56,8 @@ function InnerApp() {
         return <USMLE />;
       case 'studylog':
         return <StudyLog />;
+      case 'dailylog':
+        return <DailyStudyLog />;
       case 'strategicreview':
         return <StrategicReviewPage />;
       default:

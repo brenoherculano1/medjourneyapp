@@ -40,7 +40,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: 'Entrevistas', page: 'interviews' as const, icon: MessageSquare },
     { name: 'Vistos & Viagem', page: 'visaPlanning' as const, icon: Plane },
     { name: 'USMLE', page: 'usmle' as const, icon: UsaFlagIcon },
-    { name: 'study Log', page: 'studylog' as const, icon: BookOpen },
+    { name: 'System Tracker', page: 'studylog' as const, icon: BookOpen },
+    { name: 'Study Log', page: 'dailylog' as const, icon: ClipboardList },
     { name: 'Assinatura', page: 'pricing' as const, icon: CreditCard },
     { name: 'Perfil', page: 'profile' as const, icon: User },
   ];

@@ -9,6 +9,7 @@ type Page =
   | 'pricing'
   | 'usmle'
   | 'studylog'
+  | 'dailylog'
   | 'strategicreview';
 
 interface NavigationContextType {
