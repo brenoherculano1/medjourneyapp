@@ -6,6 +6,7 @@ import { useNavigation } from '../../contexts/NavigationContext';
 import { useAppContext } from '../../contexts/AppContext';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../../firebase';
+import StudyLogTracker from '../components/dashboard/StudyLogTracker';
 
 interface LayoutProps {
   children: ReactNode;

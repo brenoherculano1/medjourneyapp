@@ -18,10 +18,14 @@ import { auth } from './firebase';
 
 import { NavigationProvider, useNavigation } from './contexts/NavigationContext';
 import { AppProvider } from './contexts/AppContext';
+import { useUserDataPersistence } from './hooks/useUserDataPersistence';
 
 function InnerApp() {
   const { currentPage } = useNavigation();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+
+  // Persistência global dos dados do usuário (como progresso e preferências)
+  useUserDataPersistence();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
