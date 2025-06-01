@@ -65,6 +65,7 @@ export interface VisaPlanning {
 
 export interface User {
   id: string;
+  uid: string;
   name: string;
   email: string;
   subscription: 'free' | 'monthly' | 'annual' | null;

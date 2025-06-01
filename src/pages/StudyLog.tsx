@@ -4,6 +4,9 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAppContext } from '../contexts/AppContext';
 import { User } from '../types';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../firebase';
+import { useNavigate } from 'react-router-dom';
 
 type TopicStatus = 'To Review' | 'In Progress' | 'Mastered';
 
@@ -218,40 +221,77 @@ const SYSTEMS: System[] = [
 ];
 
 const StudyLog: React.FC = () => {
-  const { user } = useAppContext();
+  const { user, setUser } = useAppContext();
+  const navigate = useNavigate();
   const [systems, setSystems] = useState<System[]>(SYSTEMS);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Cálculo dos totais globais
+  const allTopics = systems.flatMap(system => system.topics);
+  const totalTopics = allTopics.length;
+  const completedTopics = allTopics.filter(t => t.completed).length;
+  const inProgressTopics = allTopics.filter(t => t.status === 'In Progress').length;
+  const masteredTopics = allTopics.filter(t => t.status === 'Mastered').length;
+  const globalProgress = totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0;
+
   useEffect(() => {
     const loadUserProgress = async () => {
-      if (!user?.id) return;
-      
+      if (!user?.uid) {
+        setLoading(false);
+        return;
+      }
       try {
-        const userDoc = await getDoc(doc(db, 'studyProgress', user.id));
+        const userDoc = await getDoc(doc(db, 'studyProgress', user.uid));
         if (userDoc.exists()) {
           setSystems(userDoc.data().systems);
         }
       } catch (error) {
-        console.error('Error loading progress:', error);
+        setSystems(SYSTEMS);
       } finally {
         setLoading(false);
       }
     };
-
     loadUserProgress();
   }, [user]);
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        setUser({
+          id: firebaseUser.uid,
+          uid: firebaseUser.uid,
+          name: firebaseUser.displayName || '',
+          email: firebaseUser.email || '',
+          subscription: null,
+          subscriptionExpiry: null,
+        });
+      } else {
+        setUser(null);
+      }
+    });
+    return () => unsubscribe();
+  }, [setUser]);
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+  }, [user, navigate]);
+
   const saveProgress = async (updatedSystems: System[]) => {
-    if (!user?.id) return;
-    
+    if (!user?.uid) {
+      alert('Você precisa estar logado para salvar seu progresso.');
+      navigate('/login');
+      return;
+    }
     try {
-      await setDoc(doc(db, 'studyProgress', user.id), {
+      await setDoc(doc(db, 'studyProgress', user.uid), {
         systems: updatedSystems,
         lastUpdated: new Date().toISOString(),
       });
     } catch (error) {
-      console.error('Error saving progress:', error);
+      alert('Erro ao salvar progresso.');
     }
   };
 
@@ -301,181 +341,129 @@ const StudyLog: React.FC = () => {
 
   const calculateSystemProgress = (system: System) => {
     const completed = system.topics.filter(topic => topic.completed).length;
-    const total = system.topics.length;
-    const percentage = Math.round((completed / total) * 100);
-    return { completed, total, percentage };
+    return Math.round((completed / system.topics.length) * 100);
   };
 
   const filteredSystems = useMemo(() => {
     if (!searchQuery) return systems;
-
     const query = searchQuery.toLowerCase();
     return systems.map(system => ({
       ...system,
-      topics: system.topics.filter(topic => 
-        topic.name.toLowerCase().includes(query) ||
-        system.name.toLowerCase().includes(query)
-      )
+      topics: system.topics.filter(topic =>
+        topic.name.toLowerCase().includes(query)
+      ),
     })).filter(system => system.topics.length > 0);
   }, [systems, searchQuery]);
 
-  const stats = useMemo(() => {
-    const allTopics = systems.flatMap(system => system.topics);
-    const total = allTopics.length;
-    const completed = allTopics.filter(topic => topic.completed).length;
-    const inProgress = allTopics.filter(topic => topic.status === 'In Progress').length;
-    const mastered = allTopics.filter(topic => topic.status === 'Mastered').length;
-    const toReview = allTopics.filter(topic => topic.status === 'To Review').length;
-
-    return {
-      total,
-      completed,
-      inProgress,
-      mastered,
-      toReview,
-      percentage: Math.round((completed / total) * 100)
-    };
-  }, [systems]);
-
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
+    return <div className="p-8 text-center text-gray-600">Carregando...</div>;
   }
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">USMLE System Tracker</h1>
-        
-        {/* Search Bar */}
-        <div className="relative mb-6">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-gray-400" />
-          </div>
-              <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search topics or systems..."
-            className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md leading-5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-
-        {/* Stats Overview */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
-            <div className="text-sm font-medium text-blue-800 dark:text-blue-200">Total Topics</div>
-            <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">{stats.total}</div>
-            </div>
-          <div className="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg">
-            <div className="text-sm font-medium text-green-800 dark:text-green-200">Completed</div>
-            <div className="text-2xl font-bold text-green-900 dark:text-green-100">{stats.completed}</div>
-          </div>
-          <div className="bg-orange-50 dark:bg-orange-900/30 p-4 rounded-lg">
-            <div className="text-sm font-medium text-orange-800 dark:text-orange-200">In Progress</div>
-            <div className="text-2xl font-bold text-orange-900 dark:text-orange-100">{stats.inProgress}</div>
-                </div>
-          <div className="bg-purple-50 dark:bg-purple-900/30 p-4 rounded-lg">
-            <div className="text-sm font-medium text-purple-800 dark:text-purple-200">Mastered</div>
-            <div className="text-2xl font-bold text-purple-900 dark:text-purple-100">{stats.mastered}</div>
-          </div>
+      <h1 className="text-3xl font-extrabold text-blue-700 dark:text-blue-200 mb-6 tracking-tight drop-shadow-sm">USMLE System Tracker</h1>
+      {/* Cards de contagem */}
+      <div className="grid grid-cols-2 gap-4 mb-6 sm:grid-cols-4">
+        <div className="bg-blue-900 text-white rounded-lg shadow p-4 flex flex-col items-center">
+          <span className="text-2xl font-bold">{totalTopics}</span>
+          <span className="text-sm mt-1 text-center">Total Topics</span>
         </div>
-        
-        {/* Global Progress Bar */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Total Progress</span>
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{stats.percentage}%</span>
-          </div>
-          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-            <div
-              className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
-              style={{ width: `${stats.percentage}%` }}
-            ></div>
-          </div>
+        <div className="bg-green-800 text-white rounded-lg shadow p-4 flex flex-col items-center">
+          <span className="text-2xl font-bold">{completedTopics}</span>
+          <span className="text-sm mt-1 text-center">Completed</span>
         </div>
-
-        {/* Systems List */}
-        <div className="space-y-4">
-          {filteredSystems.map(system => {
-            const { completed, total, percentage } = calculateSystemProgress(system);
-            
-            return (
-              <div
-                key={system.id}
-                className="border dark:border-gray-700 rounded-lg overflow-hidden"
-              >
-                {/* System Header */}
-                <button
-                  onClick={() => toggleSystem(system.id)}
-                  className="w-full px-4 py-3 flex items-center justify-between bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
-                  aria-expanded={system.isExpanded}
-                  aria-controls={`${system.id}-topics`}
-                >
-                  <div className="flex items-center space-x-3">
-                    {system.isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                    <span className="font-medium text-gray-900 dark:text-white">{system.name}</span>
-                  </div>
-                  <span className="text-sm text-gray-600 dark:text-gray-300">
-                    {completed} of {total} topics completed - {percentage}%
-                  </span>
-                </button>
-
-                {/* Topics List */}
-                {system.isExpanded && (
-                  <div 
-                    id={`${system.id}-topics`}
-                    className="p-4 space-y-3 bg-white dark:bg-gray-800"
-                    role="region"
-                    aria-label={`${system.name} topics`}
-                  >
-                    {system.topics.map(topic => (
-                      <div
-                        key={topic.id}
-                        className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <button
-                            onClick={() => toggleTopic(system.id, topic.id)}
-                            className={`w-5 h-5 rounded border flex items-center justify-center transition-colors
-                              ${topic.completed
-                                ? 'bg-blue-600 border-blue-600'
-                                : 'border-gray-300 dark:border-gray-600'
-                              }`}
-                            aria-label={`Mark ${topic.name} as ${topic.completed ? 'incomplete' : 'complete'}`}
-                          >
-                            {topic.completed && <Check size={14} className="text-white" />}
-                          </button>
-                          <span className="text-gray-900 dark:text-white">{topic.name}</span>
-                        </div>
-                        
-                        <select
-                          value={topic.status}
-                          onChange={(e) => updateTopicStatus(system.id, topic.id, e.target.value as TopicStatus)}
-                          className={`px-2 py-1 rounded text-sm font-medium
-                            ${topic.status === 'To Review'
-                              ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
-                              : topic.status === 'In Progress'
-                              ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                              : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                            }`}
-                          aria-label={`Change status for ${topic.name}`}
+        <div className="bg-yellow-900 text-white rounded-lg shadow p-4 flex flex-col items-center">
+          <span className="text-2xl font-bold">{inProgressTopics}</span>
+          <span className="text-sm mt-1 text-center">In Progress</span>
+        </div>
+        <div className="bg-purple-900 text-white rounded-lg shadow p-4 flex flex-col items-center">
+          <span className="text-2xl font-bold">{masteredTopics}</span>
+          <span className="text-sm mt-1 text-center">Mastered</span>
+        </div>
+      </div>
+      {/* Barra de progresso global */}
+      <div className="mb-8">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Total Progress</span>
+          <span className="text-sm font-medium text-blue-700 dark:text-blue-200">{globalProgress}%</span>
+        </div>
+        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+          <div
+            className="bg-gradient-to-r from-blue-800 to-purple-700 h-3 rounded-full transition-all duration-300"
+            style={{ width: `${globalProgress}%` }}
+          />
+        </div>
+      </div>
+      {/* Busca */}
+      <div className="relative mb-6">
+        <input
+          type="text"
+          placeholder="Search topics or systems..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full p-2 pl-10 border rounded-lg bg-gray-900 text-white placeholder-gray-400"
+        />
+        <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+      </div>
+      {/* Lista de sistemas */}
+      <div className="space-y-4">
+        {filteredSystems.map((system) => (
+          <div key={system.id} className="bg-gray-900 rounded-lg shadow">
+            <button
+              onClick={() => toggleSystem(system.id)}
+              className="w-full p-4 flex items-center justify-between hover:bg-gray-800 rounded-t-lg"
+            >
+              <div className="flex items-center">
+                <span className="font-semibold text-white">{system.name}</span>
+                <span className="ml-2 text-sm text-gray-400">
+                  {system.topics.filter(t => t.completed).length} of {system.topics.length} topics completed - {calculateSystemProgress(system)}%
+                </span>
+              </div>
+              {system.isExpanded ? (
+                <ChevronUp className="h-5 w-5 text-gray-400" />
+              ) : (
+                <ChevronDown className="h-5 w-5 text-gray-400" />
+              )}
+            </button>
+            {system.isExpanded && (
+              <div className="p-4 border-t border-gray-800 bg-gray-800 rounded-b-lg">
+                <div className="space-y-2">
+                  {system.topics.map((topic) => (
+                    <div
+                      key={topic.id}
+                      className="flex items-center justify-between p-2 hover:bg-gray-700 rounded"
+                    >
+                      <div className="flex items-center">
+                        <button
+                          onClick={() => toggleTopic(system.id, topic.id)}
+                          className={`w-5 h-5 rounded border mr-3 flex items-center justify-center ${
+                            topic.completed
+                              ? 'bg-green-500 border-green-500'
+                              : 'border-gray-500'
+                          }`}
                         >
-                          <option value="To Review">To Review</option>
-                          <option value="In Progress">In Progress</option>
-                          <option value="Mastered">Mastered</option>
-                        </select>
+                          {topic.completed && <Check className="h-4 w-4 text-white" />}
+                        </button>
+                        <span className="text-white">{topic.name}</span>
+                      </div>
+                      <select
+                        value={topic.status}
+                        onChange={(e) =>
+                          updateTopicStatus(system.id, topic.id, e.target.value as TopicStatus)
+                        }
+                        className="text-sm border rounded px-2 py-1 bg-gray-900 text-white border-gray-600"
+                      >
+                        <option value="To Review">To Review</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Mastered">Mastered</option>
+                      </select>
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
+            )}
           </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+        ))}
       </div>
     </div>
   );

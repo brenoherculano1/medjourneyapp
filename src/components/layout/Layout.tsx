@@ -6,7 +6,7 @@ import { useNavigation } from '../../contexts/NavigationContext';
 import { useAppContext } from '../../contexts/AppContext';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../../firebase';
-import StudyLogTracker from '../components/dashboard/StudyLogTracker';
+import StudyLogTracker from '../dashboard/StudyLogTracker';
 
 interface LayoutProps {
   children: ReactNode;
@@ -40,7 +40,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: 'Estágios', page: 'applications' as const, icon: ClipboardList },
     { name: 'Entrevistas', page: 'interviews' as const, icon: MessageSquare },
     { name: 'Vistos & Viagem', page: 'visaPlanning' as const, icon: Plane },
-    { name: 'USMLE', page: 'usmle' as const, icon: UsaFlagIcon },
+    { name: 'USMLE', page: 'usmle' as const, icon: BookOpen },
     { name: 'IMG Residency Navigator', page: 'imgnavigator' as const, icon: User },
     { name: 'System Tracker', page: 'studylog' as const, icon: BookOpen },
     { name: 'Study Log', page: 'dailylog' as const, icon: ClipboardList },
@@ -54,110 +54,148 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      navigateTo('dashboard'); // força a navegação para uma página segura
-      // O App.tsx já renderiza <Login /> se não estiver logado
+      navigateTo('dashboard');
     } catch (error) {
-      // Silencia erros para não exibir nada ao usuário
+      console.error('Erro ao fazer logout:', error);
     }
   };
 
   return (
-    <div className="h-screen flex overflow-hidden bg-gray-50">
-      {/* Overlay para mobile quando sidebar aberta */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 md:hidden" onClick={closeSidebar} />
-      )}
-
-      {/* Sidebar */}
-      <div
-        className={`fixed z-50 inset-y-0 left-0 flex flex-col bg-white shadow-lg transition-transform duration-300 ease-in-out
-          w-64 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:static md:translate-x-0 md:w-64 md:flex
-        `}
-      >
-        {/* Topo da sidebar */}
-        <div className="flex items-center h-16 px-4 border-b border-gray-200 relative">
-          <span className="text-blue-600 font-bold text-xl mx-auto md:mx-0">MedJourney</span>
-          {/* Botão X só no mobile e quando aberta */}
-          {sidebarOpen && (
+    <div className="min-h-screen bg-gray-100">
+      {/* Sidebar para desktop */}
+      <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
+        <div className="flex-1 flex flex-col min-h-0 bg-white border-r border-gray-200">
+          <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
+            <div className="flex items-center flex-shrink-0 px-4">
+              <h1 className="text-xl font-bold text-gray-900">MedJourney</h1>
+            </div>
+            <nav className="mt-5 flex-1 px-2 space-y-1">
+              {navigationItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.page}
+                    onClick={() => navigateTo(item.page)}
+                    className={`${
+                      currentPage === item.page
+                        ? 'bg-gray-100 text-gray-900'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    } group flex items-center px-2 py-2 text-sm font-medium rounded-md w-full`}
+                  >
+                    <Icon className="mr-3 h-6 w-6" />
+                    {item.name}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+          <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
             <button
-              className="absolute right-4 md:hidden text-gray-500 hover:text-gray-700"
-              onClick={closeSidebar}
-              aria-label="Fechar menu"
+              onClick={handleLogout}
+              className="flex-shrink-0 w-full group block"
             >
-              <X size={24} />
+              <div className="flex items-center">
+                <div>
+                  <LogOut className="h-6 w-6 text-gray-400 group-hover:text-gray-500" />
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+                    Sair
+                  </p>
+                </div>
+              </div>
             </button>
-          )}
-        </div>
-        {/* Navegação */}
-        <div className="flex-1 flex flex-col overflow-y-auto pt-5 pb-4">
-          <nav className="mt-5 flex-1 px-2 space-y-1">
-            {navigationItems.map((item) => {
-              const isActive = currentPage === item.page;
-              const isImgNavigator = item.name === 'IMG Residency Navigator';
-              return (
-                <button
-                  key={item.name}
-                  onClick={() => {
-                    navigateTo(item.page);
-                    closeSidebar();
-                  }}
-                  className={
-                    isImgNavigator && isActive
-                      ? `group flex items-center gap-2 justify-center px-2 py-2 rounded-xl font-semibold text-blue-700 bg-gradient-to-r from-blue-100 to-blue-200 shadow-md w-full transition-all duration-200 text-base`
-                      : `group flex items-center px-2 py-2 text-base font-medium rounded-md w-full ${isActive ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`
-                  }
-                >
-                  <item.icon className={
-                    isImgNavigator && isActive
-                      ? 'h-5 w-5 text-blue-700'
-                      : `mr-3 h-5 w-5 ${isActive ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-500'}`
-                  } />
-                  {isImgNavigator && isActive ? (
-                    <span className="text-base font-semibold">IMG Residency Navigator</span>
-                  ) : (
-                    item.name
-                  )}
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-        {/* Usuário e logout */}
-        <div className="border-t border-gray-200 p-4">
-          <button onClick={handleLogout} className="flex items-center text-xs text-gray-500 hover:text-gray-700">
-            <LogOut size={14} className="mr-1" />
-            Sair
-          </button>
+          </div>
         </div>
       </div>
 
       {/* Conteúdo principal */}
-      <div className="flex flex-col flex-1 overflow-hidden">
-        {/* Navbar/topbar */}
-        <div className="relative z-10 flex-shrink-0 flex h-16 bg-white shadow items-center justify-between px-4 md:px-8">
-          {/* Botão menu hambúrguer só no mobile */}
-          <button
-            onClick={toggleSidebar}
-            className="md:hidden text-gray-500 focus:outline-none"
-            aria-label="Abrir menu"
-          >
-            <Menu size={28} />
-          </button>
-          {/* Logo centralizado no mobile, alinhado à esquerda no desktop */}
-          <div className="flex-1 flex justify-center md:justify-start">
-            <span className="text-blue-600 font-bold text-xl">MedJourney</span>
-          </div>
-          {/* Itens só no desktop */}
-          <div className="hidden md:flex items-center space-x-4">
-            <span className="text-base font-medium text-gray-700">Seja Bem-vindo!</span>
-            {user.subscription && (
-              <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Premium</span>
+      <div className="md:pl-64 flex flex-col flex-1">
+        {/* Barra superior para mobile */}
+        <div className="md:hidden">
+          <div className="fixed inset-0 flex z-40">
+            {sidebarOpen && (
+              <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={closeSidebar} />
             )}
+            <div
+              className={`${
+                sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+              } relative flex-1 flex flex-col max-w-xs w-full bg-white transition ease-in-out duration-300 transform`}
+            >
+              <div className="absolute top-0 right-0 -mr-12 pt-2">
+                <button
+                  className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                  onClick={closeSidebar}
+                >
+                  <X className="h-6 w-6 text-white" />
+                </button>
+              </div>
+              <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
+                <div className="flex-shrink-0 flex items-center px-4">
+                  <h1 className="text-xl font-bold text-gray-900">MedJourney</h1>
+                </div>
+                <nav className="mt-5 px-2 space-y-1">
+                  {navigationItems.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <button
+                        key={item.page}
+                        onClick={() => {
+                          navigateTo(item.page);
+                          closeSidebar();
+                        }}
+                        className={`${
+                          currentPage === item.page
+                            ? 'bg-gray-100 text-gray-900'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        } group flex items-center px-2 py-2 text-base font-medium rounded-md w-full`}
+                      >
+                        <Icon className="mr-4 h-6 w-6" />
+                        {item.name}
+                      </button>
+                    );
+                  })}
+                </nav>
+              </div>
+              <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
+                <button
+                  onClick={handleLogout}
+                  className="flex-shrink-0 w-full group block"
+                >
+                  <div className="flex items-center">
+                    <div>
+                      <LogOut className="h-6 w-6 text-gray-400 group-hover:text-gray-500" />
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+                        Sair
+                      </p>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-        {/* Conteúdo */}
-        <main className="flex-1 relative overflow-y-auto focus:outline-none p-2 sm:p-4 md:p-6 bg-gray-50">
-          {children}
+
+        {/* Botão de menu para mobile */}
+        <div className="sticky top-0 z-10 md:hidden pl-1 pt-1 sm:pl-3 sm:pt-3 bg-gray-100">
+          <button
+            type="button"
+            className="-ml-0.5 -mt-0.5 h-12 w-12 inline-flex items-center justify-center rounded-md text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+            onClick={toggleSidebar}
+          >
+            <Menu className="h-6 w-6" />
+          </button>
+        </div>
+
+        {/* Conteúdo da página */}
+        <main className="flex-1">
+          <div className="py-6">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+              {children}
+            </div>
+          </div>
         </main>
       </div>
     </div>

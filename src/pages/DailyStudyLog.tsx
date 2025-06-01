@@ -4,6 +4,7 @@ import { db } from '../firebase';
 import { useAppContext } from '../contexts/AppContext';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button';
+import { useNavigate } from 'react-router-dom';
 
 type StudyLogEntry = {
   date: string;
@@ -43,6 +44,7 @@ const getWeekRange = () => {
 
 const DailyStudyLog: React.FC = () => {
   const { user } = useAppContext();
+  const navigate = useNavigate();
   const [log, setLog] = useState<StudyLogEntry[]>([]);
   const [anki, setAnki] = useState('');
   const [uworld, setUworld] = useState('');
@@ -50,11 +52,16 @@ const DailyStudyLog: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+  }, [user, navigate]);
+
+  useEffect(() => {
     const loadStudyLog = async () => {
-      if (!user?.id) return;
-      
+      if (!user?.uid) return;
       try {
-        const userDoc = await getDoc(doc(db, 'dailyStudyLog', user.id));
+        const userDoc = await getDoc(doc(db, 'dailyStudyLog', user.uid));
         if (userDoc.exists()) {
           setLog(userDoc.data().entries || []);
         }
@@ -64,20 +71,22 @@ const DailyStudyLog: React.FC = () => {
         setLoading(false);
       }
     };
-
     loadStudyLog();
   }, [user]);
 
   const saveStudyLog = async (updatedLog: StudyLogEntry[]) => {
-    if (!user?.id) return;
-    
+    if (!user?.uid) {
+      alert('Você precisa estar logado para salvar seu progresso.');
+      navigate('/login');
+      return;
+    }
     try {
-      await setDoc(doc(db, 'dailyStudyLog', user.id), {
+      await setDoc(doc(db, 'dailyStudyLog', user.uid), {
         entries: updatedLog,
         lastUpdated: new Date().toISOString(),
       });
     } catch (error) {
-      console.error('Error saving study log:', error);
+      alert('Erro ao salvar progresso.');
     }
   };
 

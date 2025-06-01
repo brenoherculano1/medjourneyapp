@@ -1,35 +1,60 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { auth, db } from '../firebase';
+import { db } from '../firebase';
+import { useAppContext } from '../contexts/AppContext';
 
-export function useUserData() {
-  const [userData, setUserData] = useState<any>(null);
-  const user = auth.currentUser;
+interface UserData {
+  anki?: number;
+  usmle?: number;
+  streak?: number;
+  lastUpdated?: string;
+}
+
+export const useUserData = () => {
+  const { user } = useAppContext();
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) return;
+    const loadUserData = async () => {
+      if (!user?.uid) {
+        setLoading(false);
+        return;
+      }
 
-    const fetchData = async () => {
-      const ref = doc(db, 'userData', user.uid);
-      const snapshot = await getDoc(ref);
-
-      if (snapshot.exists()) {
-        setUserData(snapshot.data());
-      } else {
-        await setDoc(ref, { streak: 0, anki: 0, usmle: 0 });
-        setUserData({ streak: 0, anki: 0, usmle: 0 });
+      try {
+        const userDoc = await getDoc(doc(db, 'userData', user.uid));
+        if (userDoc.exists()) {
+          setUserData(userDoc.data() as UserData);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar dados do usuário:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchData();
+    loadUserData();
   }, [user]);
 
-  const updateUserData = async (data: Partial<any>) => {
-    if (!user) return;
-    const ref = doc(db, 'userData', user.uid);
-    await setDoc(ref, { ...userData, ...data }, { merge: true });
-    setUserData((prev: any) => ({ ...prev, ...data }));
+  const updateUserData = async (newData: Partial<UserData>) => {
+    if (!user?.uid) {
+      alert('Você precisa estar logado para salvar seus dados.');
+      return;
+    }
+    try {
+      const updatedData = {
+        ...userData,
+        ...newData,
+        lastUpdated: new Date().toISOString(),
+      };
+      await setDoc(doc(db, 'userData', user.uid), updatedData);
+      setUserData(updatedData);
+    } catch (error) {
+      alert('Erro ao salvar dados do usuário.');
+      console.error('Erro ao atualizar dados do usuário:', error);
+    }
   };
 
-  return { userData, updateUserData };
-} 
+  return { userData, loading, updateUserData };
+}; 

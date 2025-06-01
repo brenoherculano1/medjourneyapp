@@ -16,6 +16,10 @@ const StudyLogTracker = () => {
   }, [userData]);
 
   const handleSave = () => {
+    if (!userData) {
+      alert('Você precisa estar logado para salvar seu progresso.');
+      return;
+    }
     updateUserData({
       anki: ankiCount,
       usmle: usmleCount,

@@ -3,13 +3,21 @@ import React, { useState, useEffect } from 'react';
 import { useAppContext } from '../contexts/AppContext';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
   const { user } = useAppContext();
+  const navigate = useNavigate();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [university, setUniversity] = useState('');
   const [graduationYear, setGraduationYear] = useState('');
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     if (user?.uid) {
@@ -29,8 +37,11 @@ const Profile = () => {
   }, [user]);
 
   const handleSave = async () => {
-    if (!user?.uid) return alert("Usuário não autenticado.");
-
+    if (!user?.uid) {
+      alert('Você precisa estar logado para salvar seus dados.');
+      navigate('/login');
+      return;
+    }
     try {
       await setDoc(doc(db, 'users', user.uid), {
         fullName,
@@ -38,10 +49,10 @@ const Profile = () => {
         graduationYear,
         email,
       });
-      alert("Dados salvos com sucesso!");
+      alert('Dados salvos com sucesso!');
     } catch (error) {
-      console.error("Erro ao salvar perfil:", error);
-      alert("Erro ao salvar os dados.");
+      alert('Erro ao salvar os dados.');
+      console.error('Erro ao salvar perfil:', error);
     }
   };
 

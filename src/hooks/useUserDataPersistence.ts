@@ -1,43 +1,58 @@
-import { doc, setDoc, getDoc } from "firebase/firestore";
-import { db } from "../firebase";
-import { useAppContext } from "../contexts/AppContext";
-import { useEffect, useState } from "react";
-import { User } from "../types";
+import { useEffect } from 'react';
+import { useAppContext } from '../contexts/AppContext';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
-interface UserData {
+interface StreakData {
   streak: number;
   anki: number;
   usmle: number;
+  lastUpdated?: string;
 }
 
-export const useUserDataPersistence = () => {
-  const { user } = useAppContext();
-  const [userData, setUserData] = useState<UserData | null>(null);
+export function useUserDataPersistence() {
+  const { user, streakData, setStreakData } = useAppContext();
 
-  // Carrega os dados do Firestore assim que o usuário loga
   useEffect(() => {
-    if (user?.id) {
-      const loadUserData = async () => {
-        const ref = doc(db, "users", user.id);
+    if (!user?.uid) return;
+
+    const ref = doc(db, 'users', user.uid);
+
+    const fetchUserData = async () => {
+      try {
         const snapshot = await getDoc(ref);
         if (snapshot.exists()) {
-          setUserData(snapshot.data() as UserData);
+          const data = snapshot.data();
+          if (data.streakData) {
+            setStreakData(data.streakData as StreakData);
+          }
         }
-      };
-      loadUserData();
-    }
-  }, [user]);
+      } catch (error) {
+        console.error('Erro ao buscar dados do usuário:', error);
+      }
+    };
 
-  // Salva automaticamente no Firestore sempre que userData for alterado
+    fetchUserData();
+  }, [user?.uid]);
+
   useEffect(() => {
-    if (user?.id && userData) {
-      const saveUserData = async () => {
-        const ref = doc(db, "users", user.id);
-        await setDoc(ref, userData, { merge: true });
-      };
-      saveUserData();
-    }
-  }, [userData]);
+    if (!user?.uid || !streakData) return;
 
-  return { userData, setUserData };
-}; 
+    const ref = doc(db, 'users', user.uid);
+
+    const saveData = async () => {
+      try {
+        await setDoc(ref, { 
+          streakData: {
+            ...streakData,
+            lastUpdated: new Date().toISOString()
+          }
+        }, { merge: true });
+      } catch (error) {
+        console.error('Erro ao salvar dados do usuário:', error);
+      }
+    };
+
+    saveData();
+  }, [user?.uid, streakData]);
+} 

@@ -2,6 +2,7 @@ import { Application, InterviewResponse, VisaPlanning, User } from '../types';
 
 export const mockUser: User = {
   id: '1',
+  uid: '1',
   name: 'João Silva',
   email: 'joao.silva@gmail.com',
   subscription: null,

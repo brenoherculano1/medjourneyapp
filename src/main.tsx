@@ -4,13 +4,16 @@ import { AppProvider } from './contexts/AppContext';
 import { NavigationProvider } from './contexts/NavigationContext';
 import App from './App';
 import './index.css';
+import { BrowserRouter } from 'react-router-dom';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <NavigationProvider>
-      <AppProvider>
-        <App />
-      </AppProvider>
-    </NavigationProvider>
+    <BrowserRouter>
+      <NavigationProvider>
+        <AppProvider>
+          <App />
+        </AppProvider>
+      </NavigationProvider>
+    </BrowserRouter>
   </StrictMode>
 );
