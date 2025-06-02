@@ -115,12 +115,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div className="md:hidden">
           <div className="fixed inset-0 flex z-40">
             {sidebarOpen && (
-              <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={closeSidebar} />
+              <div className="fixed inset-0 bg-gray-600 bg-opacity-75 z-50" onClick={closeSidebar} />
             )}
             <div
               className={`${
                 sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-              } relative flex-1 flex flex-col max-w-xs w-full bg-white transition ease-in-out duration-300 transform`}
+              } relative flex-1 flex flex-col max-w-xs w-full bg-white transition ease-in-out duration-300 transform z-50`}
             >
               <div className="absolute top-0 right-0 -mr-12 pt-2">
                 <button
