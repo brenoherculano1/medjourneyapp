@@ -11,7 +11,8 @@ type Page =
   | 'studylog'
   | 'dailylog'
   | 'imgnavigator'
-  | 'strategicreview';
+  | 'strategicreview'
+  | 'nbmesimulator';
 
 interface NavigationContextType {
   currentPage: Page;

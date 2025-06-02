@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Card from '../components/common/Card';
 
 const STORAGE_KEY = 'usmle-progress';
 
 const MiniUsaFlag = () => (
-  <span role="img" aria-label="USA Flag" style={{ fontSize: 24, margin: '0 2px' }}>🇺🇸</span>
+  <span role="img" aria-label="USA Flag" style={{ fontSize: 18 }}>🇺🇸</span>
 );
 
 const USMLE: React.FC = () => {
@@ -139,7 +139,7 @@ const USMLE: React.FC = () => {
             </div>
           </Card>
         </div>
-      ) : (
+      ) :
         <Card className="space-y-6">
           {/* Step 1 */}
           <div>
@@ -273,7 +273,7 @@ const USMLE: React.FC = () => {
             <div className="text-right text-sm font-medium text-blue-700 mt-1">{progress}%</div>
           </div>
         </Card>
-      )}
+      }
     </div>
   );
 };

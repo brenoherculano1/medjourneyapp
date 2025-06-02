@@ -11,6 +11,7 @@ import StudyLog from './pages/StudyLog';
 import DailyStudyLog from './pages/DailyStudyLog';
 import Login from './pages/Login';
 import IMGResidencyNavigator from './pages/IMGResidencyNavigator';
+import NBMESimulator from './pages/NBMESimulator';
 
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -67,6 +68,8 @@ function InnerApp() {
         return <StrategicReviewPage />;
       case 'imgnavigator':
         return <IMGResidencyNavigator />;
+      case 'nbmesimulator':
+        return <NBMESimulator />;
       default:
         return <Dashboard />;
     }

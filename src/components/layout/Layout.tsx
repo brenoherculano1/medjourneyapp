@@ -41,6 +41,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: 'Entrevistas', page: 'interviews' as const, icon: MessageSquare },
     { name: 'Vistos & Viagem', page: 'visaPlanning' as const, icon: Plane },
     { name: 'USMLE', page: 'usmle' as const, icon: BookOpen },
+    { name: 'NBME Simulator', page: 'nbmesimulator' as const, icon: BookOpen },
     { name: 'IMG Residency Navigator', page: 'imgnavigator' as const, icon: User },
     { name: 'System Tracker', page: 'studylog' as const, icon: BookOpen },
     { name: 'Study Log', page: 'dailylog' as const, icon: ClipboardList },
