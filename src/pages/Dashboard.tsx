@@ -7,8 +7,6 @@ import Button from '../components/common/Button';
 import ProgressCard from '../components/dashboard/ProgressCard';
 import ApplicationsCard from '../components/dashboard/ApplicationsCard';
 import SuggestionCard from '../components/dashboard/SuggestionCard';
-import { db } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
 
 const Dashboard: React.FC = () => {
   const { applications, interviewResponses, visaPlanning, user } = useAppContext();
@@ -223,62 +221,27 @@ const MiniUsaFlag = ({ className = "" }) => (
 const USMLE_CONGRATS_KEY = 'usmle-congrats-shown';
 
 const UsmleTrackerCard: React.FC = () => {
-  const { user } = useAppContext();
   const [progress, setProgress] = useState(0);
   const [answer, setAnswer] = useState<null | 'done' | 'notyet'>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { navigateTo } = useNavigation();
 
   useEffect(() => {
-    const fetchProgress = async () => {
-      if (!user?.uid) {
-        setProgress(0);
-        setLoading(false);
-        return;
-      }
-      setLoading(true);
-      setError(null);
-      try {
-        const docRef = doc(db, 'usmleProgress', user.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          let filled = 0;
-          if (data.step1 && data.step1 !== 'Não feito') filled++;
-          if (data.step2Done && data.step2Score) filled++;
-          else if (data.step2Done) filled += 0.5;
-          if (data.oet === 'Concluído') filled++;
-          if (data.ecfmg && data.ecfmg !== 'Não iniciado') filled++;
-          if (data.epic === 'Feita') filled++;
-          const pct = Math.round((filled / 5) * 100);
-          setProgress(pct);
-        } else {
-          setProgress(0);
-        }
-      } catch (err) {
-        setError('Erro ao carregar progresso do USMLE.');
-        setProgress(0);
-      }
-      setLoading(false);
-    };
-    fetchProgress();
-  }, [user?.uid]);
-
-  if (loading) {
-    return (
-      <div className="bg-white rounded-lg shadow-sm p-6 h-full flex flex-col justify-between">
-        <p>Carregando progresso do USMLE...</p>
-      </div>
-    );
-  }
-  if (error) {
-    return (
-      <div className="bg-white rounded-lg shadow-sm p-6 h-full flex flex-col justify-between">
-        <p className="text-red-600">{error}</p>
-      </div>
-    );
-  }
+    const saved = localStorage.getItem('usmle-progress');
+    if (saved) {
+      const data = JSON.parse(saved);
+      let filled = 0;
+      if (data.step1 && data.step1 !== 'Não feito') filled++;
+      if (data.step2Done && data.step2Score) filled++;
+      else if (data.step2Done) filled += 0.5;
+      if (data.oet === 'Concluído') filled++;
+      if (data.ecfmg && data.ecfmg !== 'Não iniciado') filled++;
+      if (data.epic === 'Feita') filled++;
+      const pct = Math.round((filled / 5) * 100);
+      setProgress(pct);
+    } else {
+      setProgress(0);
+    }
+  }, []);
 
   // Card comemorativo interativo ao atingir 100%
   if (progress === 100) {
