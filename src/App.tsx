@@ -12,10 +12,13 @@ import DailyStudyLog from './pages/DailyStudyLog';
 import Login from './pages/Login';
 import IMGResidencyNavigator from './pages/IMGResidencyNavigator';
 import NBMESimulator from './pages/NBMESimulator';
+import Success from './pages/Success';
 
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase';
+import { Elements } from '@stripe/react-stripe-js';
+import { stripePromise } from './lib/stripe';
 
 import { NavigationProvider, useNavigation } from './contexts/NavigationContext';
 import { AppProvider } from './contexts/AppContext';
@@ -70,6 +73,8 @@ function InnerApp() {
         return <IMGResidencyNavigator />;
       case 'nbmesimulator':
         return <NBMESimulator />;
+      case 'success':
+        return <Success />;
       default:
         return <Dashboard />;
     }
@@ -80,11 +85,13 @@ function InnerApp() {
 
 function App() {
   return (
-    <NavigationProvider>
-      <AppProvider>
-        <InnerApp />
-      </AppProvider>
-    </NavigationProvider>
+    <Elements stripe={stripePromise}>
+      <NavigationProvider>
+        <AppProvider>
+          <InnerApp />
+        </AppProvider>
+      </NavigationProvider>
+    </Elements>
   );
 }
 

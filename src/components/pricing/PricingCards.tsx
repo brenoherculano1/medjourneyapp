@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Check, Calendar, Infinity } from 'lucide-react';
+import { useStripe } from '@stripe/react-stripe-js';
 import Card from '../common/Card';
 import Button from '../common/Button';
+import { createCheckoutSession } from '../../lib/stripe';
 
 interface PricingFeature {
   text: string;
@@ -17,16 +19,53 @@ interface PricingPlan {
   buttonText: string;
   highlighted?: boolean;
   icon: React.ReactNode;
+  priceId: string; // ID do preço no Stripe
+  planType: string;
+}
+
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'stripe-buy-button': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+        'buy-button-id': string;
+        'publishable-key': string;
+      };
+    }
+  }
 }
 
 const PricingCards: React.FC = () => {
+  const stripe = useStripe();
+  const [loading, setLoading] = useState<string | null>(null);
+
   const pricingPlans: PricingPlan[] = [
+    {
+      title: 'Mensal',
+      description: 'Acesso completo a todos os recursos, renovação mensal.',
+      price: 'R$67,90',
+      period: '/mês',
+      icon: <Calendar className="h-6 w-6 text-purple-500" />,
+      priceId: 'price_mensal',
+      planType: 'mensal',
+      features: [
+        { text: 'Acesso a todas as ferramentas de aplicação', included: true },
+        { text: 'Simulador de entrevistas ilimitado', included: true },
+        { text: 'Planejamento de visto e viagem', included: true },
+        { text: 'Dashboard personalizado', included: true },
+        { text: 'Armazenamento de dados na nuvem', included: true },
+        { text: 'Suporte por email', included: true },
+        { text: 'Uma Mentoria individual sobre estágios internacionais', included: false },
+      ],
+      buttonText: 'Assinar Mensal',
+    },
     {
       title: 'Trimestral',
       description: 'Acesso completo a todos os recursos, renovação a cada 3 meses.',
       price: 'R$119,90',
       period: '/trimestre',
       icon: <Calendar className="h-6 w-6 text-blue-500" />,
+      priceId: 'price_trimestral',
+      planType: 'trimestral',
       features: [
         { text: 'Acesso a todas as ferramentas de aplicação', included: true },
         { text: 'Simulador de entrevistas ilimitado', included: true },
@@ -36,15 +75,17 @@ const PricingCards: React.FC = () => {
         { text: 'Suporte por email', included: true },
         { text: 'Uma Mentoria individual sobre estágios internacionais', included: true },
       ],
-      buttonText: 'Começar Agora',
+      buttonText: 'Assinar Trimestral',
     },
     {
       title: 'Anual',
       description: 'Economize 30% com o plano anual.',
-      price: 'R$397,90',
+      price: 'R$349,90',
       period: '/ano',
       icon: <Infinity className="h-6 w-6 text-green-500" />,
       highlighted: true,
+      priceId: 'price_anual',
+      planType: 'anual',
       features: [
         { text: 'Acesso a todas as ferramentas de aplicação', included: true },
         { text: 'Simulador de entrevistas ilimitado', included: true },
@@ -57,6 +98,38 @@ const PricingCards: React.FC = () => {
       buttonText: 'Escolher Anual',
     },
   ];
+
+  const handleCheckout = async (plan: PricingPlan) => {
+    if (!stripe) {
+      console.error('Stripe not loaded');
+      return;
+    }
+
+    setLoading(plan.planType);
+
+    try {
+      // Criar sessão de checkout
+      const sessionId = await createCheckoutSession(
+        plan.priceId,
+        plan.planType
+      );
+
+      // Redirecionar para o checkout do Stripe
+      const { error } = await stripe.redirectToCheckout({
+        sessionId,
+      });
+
+      if (error) {
+        console.error('Error redirecting to checkout:', error);
+        alert('Erro ao redirecionar para o pagamento. Tente novamente.');
+      }
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      alert('Erro ao criar sessão de pagamento. Tente novamente.');
+    } finally {
+      setLoading(null);
+    }
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
@@ -100,13 +173,38 @@ const PricingCards: React.FC = () => {
             ))}
           </ul>
           
-          <Button
-            variant={plan.highlighted ? 'primary' : 'outline'}
-            size="lg"
-            className="w-full"
-          >
-            {plan.buttonText}
-          </Button>
+          {plan.planType === 'mensal' ? (
+            <div className="w-full flex justify-center mt-4">
+              <stripe-buy-button
+                buy-button-id="buy_btn_1RbQa6AVYAfdSmjuEJi0GT0D"
+                publishable-key="pk_live_51RPUJpAVYAfdSmjuxytAwxYVRFNc5qr6kAvM5NAIHTcUUkWdju6y2XqnBraPQLj0j8MimCqrJLsvsWVpQj6owpAx001aLVvNsn"
+              ></stripe-buy-button>
+            </div>
+          ) : plan.planType === 'trimestral' ? (
+            <div className="w-full flex justify-center mt-4">
+              <stripe-buy-button
+                buy-button-id="buy_btn_1RbQdZAVYAfdSmjusM57WX4Y"
+                publishable-key="pk_live_51RPUJpAVYAfdSmjuxytAwxYVRFNc5qr6kAvM5NAIHTcUUkWdju6y2XqnBraPQLj0j8MimCqrJLsvsWVpQj6owpAx001aLVvNsn"
+              ></stripe-buy-button>
+            </div>
+          ) : plan.planType === 'anual' ? (
+            <div className="w-full flex justify-center mt-4">
+              <stripe-buy-button
+                buy-button-id="buy_btn_1RbQghAVYAfdSmju0Ayo0Jav"
+                publishable-key="pk_live_51RPUJpAVYAfdSmjuxytAwxYVRFNc5qr6kAvM5NAIHTcUUkWdju6y2XqnBraPQLj0j8MimCqrJLsvsWVpQj6owpAx001aLVvNsn"
+              ></stripe-buy-button>
+            </div>
+          ) : (
+            <Button
+              variant={plan.highlighted ? 'primary' : 'outline'}
+              size="lg"
+              className="w-full"
+              onClick={() => handleCheckout(plan)}
+              disabled={loading === plan.planType}
+            >
+              {loading === plan.planType ? 'Carregando...' : plan.buttonText}
+            </Button>
+          )}
         </Card>
       ))}
     </div>
