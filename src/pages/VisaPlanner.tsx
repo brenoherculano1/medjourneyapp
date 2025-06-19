@@ -5,11 +5,13 @@ import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 import VisaForm from '../components/visaPlanner/VisaForm';
 import { VisaPlanning } from '../types';
+import { useTranslation } from 'react-i18next';
 
 const VisaPlanner: React.FC = () => {
   const { visaPlanning, addVisaPlanning, updateVisaPlanning, deleteVisaPlanning } = useAppContext();
   const [isAddingPlanning, setIsAddingPlanning] = useState(false);
   const [editingPlanning, setEditingPlanning] = useState<VisaPlanning | null>(null);
+  const { t, i18n } = useTranslation();
 
   const handleAddPlanning = (planning: Omit<VisaPlanning, 'id' | 'createdAt' | 'updatedAt'>) => {
     addVisaPlanning(planning);
@@ -24,40 +26,58 @@ const VisaPlanner: React.FC = () => {
   };
 
   const handleDeletePlanning = (id: string) => {
-    if (confirm('Tem certeza que deseja excluir este planejamento?')) {
+    if (confirm(t('visa_confirm_delete'))) {
       deleteVisaPlanning(id);
     }
   };
 
   // Format date
   const formatDate = (dateString: string) => {
-    if (!dateString) return 'Não agendado';
+    if (!dateString) return t('visa_not_scheduled');
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('pt-BR').format(date);
+    return new Intl.DateTimeFormat(i18n.language === 'en' ? 'en-US' : 'pt-BR').format(date);
   };
 
   // Status badges
   const statusBadge = (status: string) => {
+    const statusMap: Record<string, string> = {
+      'Pendente': t('visa_status_pending'),
+      'Agendado': t('visa_status_scheduled'),
+      'Concluído': t('visa_status_completed'),
+    };
     const styles = {
-      'Pendente': 'bg-yellow-100 text-yellow-800',
-      'Agendado': 'bg-blue-100 text-blue-800',
-      'Concluído': 'bg-green-100 text-green-800',
+      [t('visa_status_pending')]: 'bg-yellow-100 text-yellow-800',
+      [t('visa_status_scheduled')]: 'bg-blue-100 text-blue-800',
+      [t('visa_status_completed')]: 'bg-green-100 text-green-800',
     } as const;
-
+    const label = statusMap[status] || status;
     return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${styles[status as keyof typeof styles]}`}>
-        {status}
+      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${styles[label] || ''}`}>
+        {label}
       </span>
     );
+  };
+
+  // Função utilitária para traduzir campos dinâmicos simples
+  const translateField = (text: string) => {
+    if (i18n.language === 'en') {
+      // Traduções simples para exemplos comuns
+      if (text === 'Pesquisando opções perto do UCSF') return 'Searching for options near UCSF';
+      if (text === 'Cotação em andamento - Atlas America') return 'Quote in progress - Atlas America';
+      if (text === 'Ainda não comprado') return 'Not purchased yet';
+      if (text === 'Preparar documentos financeiros e carta de confirmação do estágio') return 'Prepare financial documents and rotation confirmation letter';
+      // Adicione mais traduções conforme necessário
+    }
+    return text;
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Planejamento de Visto e Viagem</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t('visa_title')}</h1>
           <p className="text-gray-600 mt-1">
-            Organize seus documentos, agendamentos e preparativos de viagem
+            {t('visa_subtitle')}
           </p>
         </div>
         <Button
@@ -70,12 +90,12 @@ const VisaPlanner: React.FC = () => {
           }}
           disabled={isAddingPlanning || editingPlanning !== null}
         >
-          Novo Planejamento
+          {t('visa_new_plan')}
         </Button>
       </div>
 
       {isAddingPlanning && (
-        <Card title="Adicionar Novo Planejamento">
+        <Card title={t('visa_add_new')}>
           <VisaForm
             onSubmit={handleAddPlanning}
             isEdit={false}
@@ -84,7 +104,7 @@ const VisaPlanner: React.FC = () => {
       )}
 
       {editingPlanning && (
-        <Card title="Editar Planejamento">
+        <Card title={t('visa_edit_plan')}>
           <VisaForm
             onSubmit={handleUpdatePlanning}
             initialData={editingPlanning}
@@ -98,16 +118,16 @@ const VisaPlanner: React.FC = () => {
           {visaPlanning.length === 0 ? (
             <Card>
               <div className="text-center py-10">
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum planejamento adicionado</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">{t('visa_none_added')}</h3>
                 <p className="text-gray-500 mb-6">
-                  Adicione informações sobre seu visto e planejamento de viagem para cada país de destino.
+                  {t('visa_none_desc')}
                 </p>
                 <Button
                   variant="primary"
                   leftIcon={<PlusCircle size={18} />}
                   onClick={() => setIsAddingPlanning(true)}
                 >
-                  Criar Planejamento
+                  {t('visa_create_plan')}
                 </Button>
               </div>
             </Card>
@@ -118,7 +138,7 @@ const VisaPlanner: React.FC = () => {
                   <div className="flex justify-between">
                     <div>
                       <h3 className="text-xl font-semibold text-gray-900">{plan.country}</h3>
-                      <p className="text-gray-600">Visto tipo: {plan.visaType}</p>
+                      <p className="text-gray-600">{t('visa_type')}: {plan.visaType}</p>
                     </div>
                     <div>
                       {statusBadge(plan.status)}
@@ -127,13 +147,13 @@ const VisaPlanner: React.FC = () => {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 pt-2">
                     <div>
-                      <h4 className="text-sm font-medium text-gray-700">Detalhes do Visto</h4>
+                      <h4 className="text-sm font-medium text-gray-700">{t('visa_details')}</h4>
                       <div className="mt-2 space-y-1">
                         <p className="text-sm text-gray-600">
-                          <span className="font-medium">Agendamento:</span> {formatDate(plan.appointmentDate)}
+                          <span className="font-medium">{t('visa_appointment')}:</span> {formatDate(plan.appointmentDate)}
                         </p>
                         <p className="text-sm text-gray-600 flex items-center space-x-2">
-                          <span className="font-medium">Link da Embaixada:</span>
+                          <span className="font-medium">{t('visa_embassy_link')}:</span>
                           <a 
                             href={plan.embassyLink} 
                             target="_blank" 
@@ -147,16 +167,16 @@ const VisaPlanner: React.FC = () => {
                     </div>
                     
                     <div>
-                      <h4 className="text-sm font-medium text-gray-700">Detalhes da Viagem</h4>
+                      <h4 className="text-sm font-medium text-gray-700">{t('travel_details')}</h4>
                       <div className="mt-2 space-y-1">
                         <p className="text-sm text-gray-600">
-                          <span className="font-medium">Hospedagem:</span> {plan.accommodation || 'Não definido'}
+                          <span className="font-medium">{t('travel_accommodation')}:</span> {plan.accommodation ? translateField(plan.accommodation) : t('not_defined')}
                         </p>
                         <p className="text-sm text-gray-600">
-                          <span className="font-medium">Seguro:</span> {plan.insurance || 'Não definido'}
+                          <span className="font-medium">{t('travel_insurance')}:</span> {plan.insurance ? translateField(plan.insurance) : t('not_defined')}
                         </p>
                         <p className="text-sm text-gray-600">
-                          <span className="font-medium">Passagem:</span> {plan.flight || 'Não definido'}
+                          <span className="font-medium">{t('travel_flight')}:</span> {plan.flight ? translateField(plan.flight) : t('not_defined')}
                         </p>
                       </div>
                     </div>
@@ -164,8 +184,8 @@ const VisaPlanner: React.FC = () => {
                   
                   {plan.notes && (
                     <div className="pt-2">
-                      <h4 className="text-sm font-medium text-gray-700">Observações</h4>
-                      <p className="text-sm text-gray-600 mt-1">{plan.notes}</p>
+                      <h4 className="text-sm font-medium text-gray-700">{t('visa_notes')}</h4>
+                      <p className="text-sm text-gray-600 mt-1">{translateField(plan.notes)}</p>
                     </div>
                   )}
                   
@@ -175,14 +195,14 @@ const VisaPlanner: React.FC = () => {
                       size="sm"
                       onClick={() => setEditingPlanning(plan)}
                     >
-                      Editar
+                      {t('edit')}
                     </Button>
                     <Button
                       variant="danger"
                       size="sm"
                       onClick={() => handleDeletePlanning(plan.id)}
                     >
-                      Excluir
+                      {t('delete')}
                     </Button>
                   </div>
                 </div>

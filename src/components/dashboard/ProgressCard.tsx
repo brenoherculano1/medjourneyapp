@@ -1,6 +1,8 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Application, InterviewResponse, VisaPlanning } from '../../types';
 import Card from '../common/Card';
+import { CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 
 interface ProgressCardProps {
   applications: Application[];
@@ -13,63 +15,88 @@ const ProgressCard: React.FC<ProgressCardProps> = ({
   interviewResponses,
   visaPlanning,
 }) => {
-  // Calculate application progress
-  const applicationProgress = applications.length > 0 
-    ? applications.filter(app => app.status !== 'Preparando').length / applications.length * 100 
-    : 0;
-  
-  // Calculate interview progress
-  const interviewProgress = interviewResponses.length > 0 ? 100 : 0;
-  
-  // Calculate visa planning progress
-  const visaProgress = visaPlanning.length > 0 
-    ? visaPlanning.filter(plan => plan.status !== 'Pendente').length / visaPlanning.length * 100 
-    : 0;
-  
-  // Calculate overall progress
+  const { t } = useTranslation();
+
+  const calculateProgress = (completed: number, total: number): number => {
+    if (total === 0) return 0;
+    return (completed / total) * 100;
+  };
+
+  const applicationProgress = calculateProgress(
+    applications.filter((app) => app.status === 'Aceito').length,
+    applications.length || 1
+  );
+
+  const interviewProgress = calculateProgress(
+    interviewResponses.length,
+    applications.length || 1
+  );
+
+  const visaProgress = calculateProgress(
+    visaPlanning.filter((plan) => plan.status === 'Concluído').length,
+    applications.filter((app) => app.status === 'Aceito').length || 1
+  );
+
   const totalProgress = (applicationProgress + interviewProgress + visaProgress) / 3;
-  
+
+  const getProgressColor = (progress: number): string => {
+    if (progress >= 70) return 'bg-green-500';
+    if (progress >= 30) return 'bg-yellow-500';
+    return 'bg-blue-500';
+  };
+
+  const getProgressIcon = (progress: number) => {
+    if (progress >= 70) return <CheckCircle className="w-5 h-5 text-green-500" />;
+    if (progress >= 30) return <Clock className="w-5 h-5 text-yellow-500" />;
+    return <AlertTriangle className="w-5 h-5 text-blue-500" />;
+  };
+
   const renderProgressBar = (progress: number, label: string) => (
-    <div className="mt-2">
-      <div className="flex justify-between items-center mb-1">
-        <span className="text-sm font-medium text-gray-700">{label}</span>
+    <div className="transform transition-all duration-500 hover:scale-[1.02]">
+      <div className="flex justify-between items-center mb-2">
+        <div className="flex items-center gap-2">
+          {getProgressIcon(progress)}
+          <span className="text-sm font-medium text-gray-700">{label}</span>
+        </div>
         <span className="text-sm font-medium text-gray-700">{Math.round(progress)}%</span>
       </div>
-      <div className="w-full bg-gray-200 rounded-full h-2.5">
-        <div 
-          className="bg-blue-600 h-2.5 rounded-full transition-all duration-500 ease-out" 
+      <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+        <div
+          className={`h-2.5 rounded-full transition-all duration-1000 ease-out ${getProgressColor(progress)}`}
           style={{ width: `${progress}%` }}
-        ></div>
+        />
       </div>
     </div>
   );
 
   return (
     <Card 
-      title="Seu Progresso" 
-      className="h-full"
+      title={t('progress_title')} 
+      className="h-full transform transition-all duration-500 hover:shadow-lg"
     >
-      <div className="space-y-4">
-        {renderProgressBar(applicationProgress, 'Estágios')}
-        {renderProgressBar(interviewProgress, 'Entrevistas')}
-        {renderProgressBar(visaProgress, 'Vistos & Viagem')}
+      <div className="space-y-6">
+        {renderProgressBar(applicationProgress, t('progress_applications'))}
+        {renderProgressBar(interviewProgress, t('progress_interviews'))}
+        {renderProgressBar(visaProgress, t('progress_visa'))}
         
-        <div className="mt-6 pt-4 border-t border-gray-100">
-          <div className="flex justify-between items-center mb-1">
-            <span className="text-base font-medium text-gray-800">Progresso Geral</span>
-            <span className="text-base font-medium text-gray-800">{Math.round(totalProgress)}%</span>
+        <div className="mt-8 pt-6 border-t border-gray-100">
+          <div className="flex justify-between items-center mb-3">
+            <span className="text-lg font-semibold text-gray-800">{t('progress_overall')}</span>
+            <span className="text-lg font-semibold text-gray-800">{Math.round(totalProgress)}%</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-3">
+          <div className="w-full bg-gray-100 rounded-full h-4 overflow-hidden">
             <div 
-              className="bg-green-500 h-3 rounded-full transition-all duration-500 ease-out" 
+              className={`h-4 rounded-full transition-all duration-1000 ease-out ${getProgressColor(totalProgress)}`}
               style={{ width: `${totalProgress}%` }}
-            ></div>
+            />
           </div>
           
-          <div className="mt-3 text-sm text-gray-600">
-            {totalProgress < 30 && "Você está começando sua jornada! Continue configurando seus estágios."}
-            {totalProgress >= 30 && totalProgress < 70 && "Bom progresso! Continue preparando suas entrevistas e planejando sua viagem."}
-            {totalProgress >= 70 && "Você está quase pronto para embarcar na sua experiência internacional!"}
+          <div className="mt-4 p-4 rounded-lg bg-gray-50 border border-gray-100">
+            <p className="text-sm text-gray-700 leading-relaxed">
+              {totalProgress < 30 && t('progress_msg_start')}
+              {totalProgress >= 30 && totalProgress < 70 && t('progress_msg_mid')}
+              {totalProgress >= 70 && t('progress_msg_ready')}
+            </p>
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { Calendar, Link as LinkIcon, Home, Plane, Shield } from 'lucide-react';
 import Button from '../common/Button';
 import { VisaPlanning, VisaStatus } from '../../types';
 import { COUNTRIES } from '../../utils/constants';
+import { useTranslation } from 'react-i18next';
 
 interface VisaFormProps {
   onSubmit: (visaPlanning: Omit<VisaPlanning, 'id' | 'createdAt' | 'updatedAt'>) => void;
@@ -15,6 +16,7 @@ const VisaForm: React.FC<VisaFormProps> = ({
   initialData,
   isEdit = false,
 }) => {
+  const { t, i18n } = useTranslation();
   const [formData, setFormData] = useState<Omit<VisaPlanning, 'id' | 'createdAt' | 'updatedAt'>>({
     country: initialData?.country || COUNTRIES[0].name,
     visaType: initialData?.visaType || COUNTRIES[0].visaTypes[0],
@@ -68,12 +70,12 @@ const VisaForm: React.FC<VisaFormProps> = ({
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-6">
         <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Informações do Visto</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-4">{t('visa_form_title')}</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label htmlFor="country" className="block text-sm font-medium text-gray-700">
-                País de Destino *
+                {t('visa_form_country')} *
               </label>
               <select
                 id="country"
@@ -92,7 +94,7 @@ const VisaForm: React.FC<VisaFormProps> = ({
 
             <div>
               <label htmlFor="visaType" className="block text-sm font-medium text-gray-700">
-                Tipo de Visto *
+                {t('visa_form_type')} *
               </label>
               <select
                 id="visaType"
@@ -112,7 +114,7 @@ const VisaForm: React.FC<VisaFormProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label htmlFor="appointmentDate" className="block text-sm font-medium text-gray-700">
-                Data do Agendamento
+                {t('visa_form_appointment')}
               </label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -131,7 +133,7 @@ const VisaForm: React.FC<VisaFormProps> = ({
 
             <div>
               <label htmlFor="status" className="block text-sm font-medium text-gray-700">
-                Status *
+                {t('visa_form_status')} *
               </label>
               <select
                 id="status"
@@ -140,16 +142,16 @@ const VisaForm: React.FC<VisaFormProps> = ({
                 onChange={handleChange}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               >
-                <option value="Pendente">Pendente</option>
-                <option value="Agendado">Agendado</option>
-                <option value="Concluído">Concluído</option>
+                <option value="Pendente">{t('visa_status_pending')}</option>
+                <option value="Agendado">{t('visa_status_scheduled')}</option>
+                <option value="Concluído">{t('visa_status_completed')}</option>
               </select>
             </div>
           </div>
 
           <div>
             <label htmlFor="embassyLink" className="block text-sm font-medium text-gray-700">
-              Link da Embaixada
+              {t('visa_form_embassy_link')}
             </label>
             <div className="mt-1 relative rounded-md shadow-sm">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -169,13 +171,13 @@ const VisaForm: React.FC<VisaFormProps> = ({
         </div>
 
         <div className="p-4 bg-green-50 rounded-lg border border-green-100">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Planejamento de Viagem</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-4">{t('travel_form_title')}</h3>
           
           <div className="space-y-4">
             <div>
               <label htmlFor="accommodation" className="block text-sm font-medium text-gray-700 flex items-center">
                 <Home size={16} className="mr-2 text-gray-500" />
-                Hospedagem
+                {t('travel_accommodation')}
               </label>
               <input
                 type="text"
@@ -183,7 +185,7 @@ const VisaForm: React.FC<VisaFormProps> = ({
                 name="accommodation"
                 value={formData.accommodation}
                 onChange={handleChange}
-                placeholder="Hotel, Airbnb, acomodação na universidade..."
+                placeholder={t('travel_accommodation_placeholder')}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
@@ -191,7 +193,7 @@ const VisaForm: React.FC<VisaFormProps> = ({
             <div>
               <label htmlFor="insurance" className="block text-sm font-medium text-gray-700 flex items-center">
                 <Shield size={16} className="mr-2 text-gray-500" />
-                Seguro Viagem
+                {t('travel_insurance')}
               </label>
               <input
                 type="text"
@@ -199,7 +201,7 @@ const VisaForm: React.FC<VisaFormProps> = ({
                 name="insurance"
                 value={formData.insurance}
                 onChange={handleChange}
-                placeholder="Nome da seguradora, tipo de cobertura..."
+                placeholder={t('travel_insurance_placeholder')}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
@@ -207,7 +209,7 @@ const VisaForm: React.FC<VisaFormProps> = ({
             <div>
               <label htmlFor="flight" className="block text-sm font-medium text-gray-700 flex items-center">
                 <Plane size={16} className="mr-2 text-gray-500" />
-                Passagem Aérea
+                {t('travel_flight')}
               </label>
               <input
                 type="text"
@@ -215,14 +217,14 @@ const VisaForm: React.FC<VisaFormProps> = ({
                 name="flight"
                 value={formData.flight}
                 onChange={handleChange}
-                placeholder="Companhia aérea, número do voo, datas..."
+                placeholder={t('travel_flight_placeholder')}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
 
             <div>
               <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
-                Observações
+                {t('visa_notes')}
               </label>
               <textarea
                 id="notes"
@@ -231,7 +233,7 @@ const VisaForm: React.FC<VisaFormProps> = ({
                 value={formData.notes}
                 onChange={handleChange}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                placeholder="Observações adicionais sobre sua viagem e documentação..."
+                placeholder={t('visa_notes_placeholder')}
               />
             </div>
           </div>
@@ -243,7 +245,7 @@ const VisaForm: React.FC<VisaFormProps> = ({
           type="submit"
           variant="primary"
         >
-          {isEdit ? 'Atualizar Planejamento' : 'Salvar Planejamento'}
+          {isEdit ? t('save_changes') : t('add_plan')}
         </Button>
       </div>
     </form>

@@ -1,31 +1,58 @@
 import React from 'react';
-import { ChevronRight, PlusCircle } from 'lucide-react';
+import { ChevronRight, PlusCircle, Calendar, School } from 'lucide-react';
 import Card from '../common/Card';
 import { Application } from '../../types';
 import { useNavigation } from '../../contexts/NavigationContext';
 import Button from '../common/Button';
+import { useTranslation } from 'react-i18next';
 
 interface ApplicationsCardProps {
   applications: Application[];
 }
 
 const StatusBadge: React.FC<{ status: Application['status'] }> = ({ status }) => {
+  const { t } = useTranslation();
   const statusStyles = {
-    'Preparando': 'bg-blue-100 text-blue-800',
-    'Enviado': 'bg-yellow-100 text-yellow-800',
-    'Aguardando': 'bg-purple-100 text-purple-800',
-    'Aceito': 'bg-green-100 text-green-800',
-    'Rejeitado': 'bg-red-100 text-red-800',
+    'Preparando': 'bg-blue-50 text-blue-700 border-blue-100 ring-blue-100/50',
+    'Enviado': 'bg-amber-50 text-amber-700 border-amber-100 ring-amber-100/50',
+    'Aguardando': 'bg-purple-50 text-purple-700 border-purple-100 ring-purple-100/50',
+    'Aceito': 'bg-emerald-50 text-emerald-700 border-emerald-100 ring-emerald-100/50',
+    'Rejeitado': 'bg-rose-50 text-rose-700 border-rose-100 ring-rose-100/50',
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'preparando':
+        return t('status_preparing');
+      case 'enviado':
+        return t('status_sent');
+      case 'aguardando':
+        return t('status_waiting');
+      case 'aceito':
+        return t('status_accepted');
+      case 'rejeitado':
+        return t('status_rejected');
+      default:
+        return status;
+    }
   };
 
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusStyles[status]}`}>
-      {status}
+    <span 
+      className={`
+        inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border 
+        shadow-sm ring-1 ring-inset
+        transition-all duration-300 hover:scale-105
+        ${statusStyles[status]}
+      `}
+    >
+      {getStatusText(status)}
     </span>
   );
 };
 
 const ApplicationsCard: React.FC<ApplicationsCardProps> = ({ applications }) => {
+  const { t } = useTranslation();
   const { navigateTo } = useNavigation();
 
   // Sort applications by deadline (closest first)
@@ -39,52 +66,70 @@ const ApplicationsCard: React.FC<ApplicationsCardProps> = ({ applications }) => 
   // Format deadline date
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
+    return new Intl.DateTimeFormat('pt-BR', { 
+      day: '2-digit', 
+      month: 'short', 
+      year: 'numeric' 
+    }).format(date);
   };
 
   return (
     <Card 
-      title="Aplicações recentes para estágio" 
-      className="h-full"
+      title={t('applications_recent_title')} 
+      className="h-full transform transition-all duration-500 hover:shadow-lg"
       headerActions={
         <button 
           onClick={() => navigateTo('applications')}
-          className="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center"
+          className="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center transition-all duration-300 hover:translate-x-1"
         >
-          Ver todas
+          {t('applications_see_all')}
           <ChevronRight size={16} className="ml-1" />
         </button>
       }
       footer={
         <Button
           onClick={() => navigateTo('applications')}
-          className="text-sm text-blue-600 hover:text-blue-800 font-medium w-full flex items-center justify-center"
+          className="w-full flex items-center justify-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-100 transition-all duration-300 transform hover:scale-[1.02] rounded-lg py-3 font-medium"
         >
-          <PlusCircle size={16} className="mr-1" />
-          Novo Estágio
+          <PlusCircle size={18} />
+          {t('applications_new')}
         </Button>
       }
     >
       {upcomingApplications.length > 0 ? (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {upcomingApplications.map((application) => (
-            <div key={application.id} className="flex items-start justify-between">
-              <div>
+            <div 
+              key={application.id} 
+              className="p-4 bg-white rounded-lg border border-gray-100 hover:border-blue-200 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-md"
+            >
+              <div className="flex items-start justify-between mb-3">
                 <h4 className="font-medium text-gray-900">{application.hospitalName}</h4>
-                <div className="flex items-center mt-1 space-x-2">
-                  <span className="text-sm text-gray-500">{application.type}</span>
-                  <span className="text-sm text-gray-500">•</span>
-                  <span className="text-sm text-gray-500">Prazo: {formatDate(application.deadline)}</span>
-                </div>
+                <StatusBadge status={application.status} />
               </div>
-              <StatusBadge status={application.status} />
+              
+              <div className="space-y-2">
+                <div className="flex items-center text-sm text-gray-600">
+                  <School size={16} className="mr-2" />
+                  <span>{application.type}</span>
+                </div>
+                
+                <div className="flex items-center text-sm text-gray-600">
+                  <Calendar size={16} className="mr-2" />
+                  <span>{t('applications_deadline')}: {formatDate(application.deadline)}</span>
+                </div>
+                
+                {application.notes && (
+                  <p className="text-sm text-gray-500 mt-2 line-clamp-2">{application.notes}</p>
+                )}
+              </div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="text-center py-4">
-          <p className="text-gray-500">Nenhum estágio cadastrado</p>
-          <p className="text-sm text-gray-400 mt-1">Adicione seu primeiro estágio</p>
+        <div className="text-center py-8">
+          <p className="text-gray-500 font-medium">{t('applications_none')}</p>
+          <p className="text-sm text-gray-400 mt-1">{t('applications_add_first')}</p>
         </div>
       )}
     </Card>

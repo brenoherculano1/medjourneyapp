@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -10,6 +10,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import { useTranslation } from 'react-i18next';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -35,74 +36,6 @@ const recommendations: SpecialtyRecommendation[] = [
   { specialty: "Neurosurgery", minScore: 250 },
 ];
 
-const studyTips = [
-  {
-    range: [0, 199],
-    color: 'red-500',
-    emoji: '🔴',
-    title: 'Objetivo: Construir base sólida e reforçar conceitos fundamentais.',
-    tips: [
-      'Rever a UWorld passo a passo, com ênfase em revisar a explicação de cada questão.',
-      'Focar nas disciplinas básicas mais cobradas: Medicina interna, pediatria, OB/GYN.',
-      'Estudo ativo com anotações curtas das explicações.',
-      'Usar os resumos do Mehlman para criar flashcards ou fichas rápidas, garantindo memorização de pontos high-yield.',
-      'Completar vídeos de revisão (Boards and Beyond, Emma Holliday) junto dos Mehlman Notes.'
-    ]
-  },
-  {
-    range: [200, 219],
-    color: 'orange-500',
-    emoji: '🟠',
-    title: 'Objetivo: Consolidar conhecimento e começar prática intensiva de questões.',
-    tips: [
-      'Finalizar a 1ª volta da UWorld com revisão ativa de todas as explicações.',
-      'Fazer sistematicamente um tema por dia (ex: segunda = cardio, terça = pulmão).',
-      'Aumentar o uso de notas do Mehlman para revisar os tópicos mais cobrados.',
-      'Revisar gráficos, scores (CHADS-VASc, Wells, TIMI, etc.) e guidelines clínicas com base nos Mehlman Notes.',
-      'Simulados NBME a cada 10–14 dias com análise minuciosa.'
-    ]
-  },
-  {
-    range: [220, 239],
-    color: 'yellow-500',
-    emoji: '🟡',
-    title: 'Objetivo: Aumentar precisão, refinar tempo de prova, revisar pontos fracos.',
-    tips: [
-      'Segunda volta de UWorld por sistema ou modo aleatório.',
-      'Fazer revisões rápidas usando os Mehlman Notes antes de cada bloco de questões.',
-      'Marcar questões erradas com um código (ex: confundi conceito, falha de interpretação, chute).',
-      'Praticar tempo com UWSA e NBME full-lengths.',
-      'Reforçar os "escondidos" como ética, dermato, psiquiatria, doenças raras pediátricas com os Mehlman Notes.'
-    ]
-  },
-  {
-    range: [240, 259],
-    color: 'green-500',
-    emoji: '🟢',
-    title: 'Objetivo: Polir os detalhes e garantir constância no acerto.',
-    tips: [
-      'Revisar seus erros recorrentes no UWorld e simulados.',
-      'Repassar tópicos raros com revisão de Mehlman Notes + UWorld tags.',
-      'Estudo em modo reverso: tentar prever a pergunta a partir da explicação.',
-      'Praticar exames simulados em condições reais (7 blocos de 40 questões) para melhorar resistência mental.',
-      'Reforçar detalhes com Mehlman: mnemônicos, pegadinhas clássicas e diferenças sutis entre diagnósticos.'
-    ]
-  },
-  {
-    range: [260, 300],
-    color: 'emerald-600',
-    emoji: '🟩',
-    title: 'Objetivo: Manter performance e revisar de forma inteligente e seletiva.',
-    tips: [
-      'Revisões direcionadas com flashcards (Anki ou personalizados com base nos Mehlman Notes).',
-      'Praticar resolução com agilidade e foco em questões tipo "most likely to be missed".',
-      'Reforçar aspectos de gestão clínica e guidelines atualizadas.',
-      'Treinar atenção plena para não cair em distrações durante questões fáceis.',
-      'Usar Mehlman Notes como "checklist final" antes do exame para não esquecer nada essencial.'
-    ]
-  }
-];
-
 interface NBMEEntry {
   score: number;
   date: string;
@@ -111,11 +44,80 @@ interface NBMEEntry {
 const STORAGE_KEY = 'nbme-scores';
 
 export default function NBMESimulator() {
+  const { t, i18n } = useTranslation();
   const [score, setScore] = useState<number | null>(null);
   const [date, setDate] = useState<string>("");
   const [result, setResult] = useState<string[]>([]);
   const [tips, setTips] = useState<typeof studyTips[0] | null>(null);
   const [nbmeList, setNbmeList] = useState<NBMEEntry[]>([]);
+
+  const studyTips = useMemo(() => [
+    {
+      range: [0, 199],
+      color: 'red-500',
+      emoji: '🔴',
+      title: t('nbme_tip_title_0'),
+      tips: [
+        t('nbme_tip_0_0'),
+        t('nbme_tip_0_1'),
+        t('nbme_tip_0_2'),
+        t('nbme_tip_0_3'),
+        t('nbme_tip_0_4'),
+      ]
+    },
+    {
+      range: [200, 219],
+      color: 'orange-500',
+      emoji: '🟠',
+      title: t('nbme_tip_title_1'),
+      tips: [
+        t('nbme_tip_1_0'),
+        t('nbme_tip_1_1'),
+        t('nbme_tip_1_2'),
+        t('nbme_tip_1_3'),
+        t('nbme_tip_1_4'),
+      ]
+    },
+    {
+      range: [220, 239],
+      color: 'yellow-500',
+      emoji: '🟡',
+      title: t('nbme_tip_title_2'),
+      tips: [
+        t('nbme_tip_2_0'),
+        t('nbme_tip_2_1'),
+        t('nbme_tip_2_2'),
+        t('nbme_tip_2_3'),
+        t('nbme_tip_2_4'),
+      ]
+    },
+    {
+      range: [240, 259],
+      color: 'green-500',
+      emoji: '🟢',
+      title: t('nbme_tip_title_3'),
+      tips: [
+        t('nbme_tip_3_0'),
+        t('nbme_tip_3_1'),
+        t('nbme_tip_3_2'),
+        t('nbme_tip_3_3'),
+        t('nbme_tip_3_4'),
+      ]
+    },
+    {
+      range: [260, 300],
+      color: 'emerald-600',
+      emoji: '🟩',
+      title: t('nbme_tip_title_4'),
+      tips: [
+        t('nbme_tip_4_0'),
+        t('nbme_tip_4_1'),
+        t('nbme_tip_4_2'),
+        t('nbme_tip_4_3'),
+        t('nbme_tip_4_4'),
+      ]
+    }
+  ], [i18n.language, t]);
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -126,7 +128,7 @@ export default function NBMESimulator() {
 
   const handleSubmit = () => {
     if (score === null || score < 120 || score > 300) {
-      alert("Por favor, insira uma nota válida (entre 120 e 300)");
+      alert(t('nbme_alert_invalid_score'));
       return;
     }
     const matched = recommendations
@@ -139,13 +141,13 @@ export default function NBMESimulator() {
 
   const handleSave = () => {
     if (score === null || !date) {
-      alert('Preencha a nota e a data para salvar!');
+      alert(t('nbme_alert_fill_score_date'));
       return;
     }
     const newList = [...nbmeList, { score, date }];
     setNbmeList(newList);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newList));
-    alert('Nota salva com sucesso!');
+    alert(t('nbme_alert_score_saved'));
   };
 
   // Dados para o gráfico
@@ -153,7 +155,7 @@ export default function NBMESimulator() {
     labels: nbmeList.map((entry) => entry.date),
     datasets: [
       {
-        label: 'NBME Score',
+        label: t('nbme_chart_label'),
         data: nbmeList.map((entry) => entry.score),
         fill: false,
         borderColor: '#2563eb',
@@ -169,17 +171,17 @@ export default function NBMESimulator() {
     responsive: true,
     plugins: {
       legend: { display: false },
-      title: { display: true, text: 'Evolução das Notas NBME', font: { size: 18 } },
+      title: { display: true, text: t('nbme_chart_title'), font: { size: 18 } },
     },
     scales: {
       y: {
         min: 120,
         max: 300,
         ticks: { stepSize: 10 },
-        title: { display: true, text: 'Nota' },
+        title: { display: true, text: t('nbme_chart_y') },
       },
       x: {
-        title: { display: true, text: 'Data' },
+        title: { display: true, text: t('nbme_chart_x') },
       },
     },
   };
@@ -187,14 +189,14 @@ export default function NBMESimulator() {
   return (
     <div className="flex justify-center items-center min-h-[80vh] bg-gray-50">
       <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold text-blue-800 mb-2 flex items-center gap-2">📊 Análise do seu NBME</h2>
-        <p className="text-gray-700 mb-6 text-sm">Insira sua nota no simulado (NBME ou UWSA) e veja as especialidades onde você tem chance de ser competitivo:</p>
+        <h2 className="text-2xl font-bold text-blue-800 mb-2 flex items-center gap-2">📊 {t('nbme_title')}</h2>
+        <p className="text-gray-700 mb-6 text-sm">{t('nbme_subtitle')}</p>
 
         <input
           type="number"
           value={score ?? ""}
           onChange={(e) => setScore(Number(e.target.value))}
-          placeholder="Digite sua nota (ex: 230)"
+          placeholder={t('nbme_input_placeholder')}
           className="w-full border border-gray-300 rounded-lg px-4 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 mb-2 transition"
           min={120}
           max={300}
@@ -207,53 +209,49 @@ export default function NBMESimulator() {
         />
         <div className="flex gap-2 mb-4">
           <button
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded transition w-full"
             onClick={handleSubmit}
-            className="flex-1 bg-blue-700 hover:bg-blue-800 text-white font-semibold py-2 rounded-lg transition shadow"
           >
-            Ver Especialidades Compatíveis
+            {t('nbme_analyze_btn')}
           </button>
           <button
+            className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded transition w-full"
             onClick={handleSave}
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition shadow"
           >
-            Salvar Nota
+            {t('nbme_save_btn')}
           </button>
         </div>
 
         {result.length > 0 && (
-          <div className="mt-6 animate-fade-in">
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">Com essa nota, você pode aplicar para:</h3>
-            <div className="flex flex-wrap gap-2 mb-6">
-              {result.map((spec, index) => (
-                <span
-                  key={index}
-                  className="inline-flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium border border-green-200 shadow-sm"
-                >
-                  ✅ {spec}
-                </span>
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('nbme_result_title')}</h3>
+            <ul className="list-disc pl-5 text-gray-700">
+              {result.map((spec, idx) => (
+                <li key={idx}>{spec}</li>
               ))}
-            </div>
-            {tips && (
-              <div className={`rounded-lg border-l-4 pl-4 py-3 bg-gray-50 border-${tips.color} mb-2`}> 
-                <div className={`font-bold text-${tips.color} mb-1 flex items-center gap-1`}>{tips.emoji} {tips.title}</div>
-                <ul className="list-disc ml-5 text-gray-700 text-sm space-y-1">
-                  {tips.tips.map((dica, i) => (
-                    <li key={i}>{dica}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            </ul>
+          </div>
+        )}
+
+        {tips && (
+          <div className={`p-4 rounded-lg border-l-4 mb-4 ${tips.color === 'red-500' ? 'border-red-500 bg-red-50' : tips.color === 'orange-500' ? 'border-orange-500 bg-orange-50' : tips.color === 'yellow-500' ? 'border-yellow-500 bg-yellow-50' : tips.color === 'green-500' ? 'border-green-500 bg-green-50' : 'border-emerald-600 bg-emerald-50'}`}>
+            <div className="font-bold mb-2 flex items-center gap-2">{tips.emoji} {tips.title}</div>
+            <ul className="list-disc pl-5 text-gray-700 text-sm">
+              {tips.tips.map((tip, idx) => (
+                <li key={idx}>{tip}</li>
+              ))}
+            </ul>
           </div>
         )}
 
         {nbmeList.length >= 2 && (
-          <div className="mt-10">
+          <div className="mb-8">
             <Line data={chartData} options={chartOptions} />
           </div>
         )}
 
         <div className="mt-8 text-xs text-gray-500 border-t pt-4">
-          <strong>Importante:</strong> Utilizamos as médias dos candidatos aprovados em cada especialidade. É importante lembrar que, além da pontuação no Step 2 CK, outros fatores como experiências clínicas, cartas de recomendação, atividades de pesquisa e desempenho em entrevistas também desempenham papéis cruciais no processo de seleção para residências médicas nos EUA.
+          <strong>{t('nbme_important')}:</strong> {t('nbme_important_desc')}
         </div>
       </div>
     </div>

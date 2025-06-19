@@ -1,16 +1,31 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import {
-  Home, ClipboardList, MessageSquare, Plane, CreditCard, User, Menu, LogOut, BookOpen, X
+  Home, ClipboardList, MessageSquare, Plane, CreditCard, User, Menu, LogOut, BookOpen, X, Globe
 } from 'lucide-react';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { useAppContext } from '../../contexts/AppContext';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../../firebase';
-import StudyLogTracker from '../dashboard/StudyLogTracker';
+import { useTranslation } from 'react-i18next';
 
 interface LayoutProps {
   children: ReactNode;
 }
+
+const BrazilFlagIcon = (props: { className?: string }) => (
+  <svg viewBox="0 0 32 32" width="1em" height="1em" className={props.className} style={{ display: 'inline' }}>
+    <rect width="32" height="32" rx="6" fill="#009b3a"/>
+    <path d="M16,5 L27,16 L16,27 L5,16 L16,5z" fill="#fedf00" stroke="#fedf00" strokeWidth="0.5"/>
+    <circle cx="16" cy="16" r="5.5" fill="#002776" stroke="#002776" strokeWidth="0.2"/>
+    <path 
+      d="M13.5,15.5 C14.5,14.5 17.5,14.5 18.5,15.5" 
+      fill="none" 
+      stroke="#fff" 
+      strokeWidth="0.8" 
+      strokeLinecap="round"
+    />
+  </svg>
+);
 
 const UsaFlagIcon = (props: { className?: string }) => (
   <svg viewBox="0 0 32 32" width="1em" height="1em" className={props.className} style={{ display: 'inline' }}>
@@ -31,22 +46,23 @@ const UsaFlagIcon = (props: { className?: string }) => (
 );
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const { t, i18n } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { currentPage, navigateTo } = useNavigation();
   const { user } = useAppContext();
 
   const navigationItems = [
-    { name: 'Dashboard', page: 'dashboard' as const, icon: Home },
-    { name: 'Estágios', page: 'applications' as const, icon: ClipboardList },
-    { name: 'Entrevistas', page: 'interviews' as const, icon: MessageSquare },
-    { name: 'Vistos & Viagem', page: 'visaPlanning' as const, icon: Plane },
-    { name: 'USMLE', page: 'usmle' as const, icon: BookOpen },
-    { name: 'NBME Simulator', page: 'nbmesimulator' as const, icon: BookOpen },
-    { name: 'IMG Residency Navigator', page: 'imgnavigator' as const, icon: User },
-    { name: 'System Tracker', page: 'studylog' as const, icon: BookOpen },
-    { name: 'Study Log', page: 'dailylog' as const, icon: ClipboardList },
-    { name: 'Assinatura', page: 'pricing' as const, icon: CreditCard },
-    { name: 'Perfil', page: 'profile' as const, icon: User },
+    { name: t('dashboard'), page: 'dashboard' as const, icon: Home },
+    { name: t('applications'), page: 'applications' as const, icon: ClipboardList },
+    { name: t('interviews'), page: 'interviews' as const, icon: MessageSquare },
+    { name: t('visa_travel'), page: 'visaPlanning' as const, icon: Plane },
+    { name: t('usmle'), page: 'usmle' as const, icon: BookOpen },
+    { name: t('nbme_simulator'), page: 'nbmesimulator' as const, icon: BookOpen },
+    { name: t('img_residency_navigator'), page: 'imgnavigator' as const, icon: User },
+    { name: t('system_tracker'), page: 'studylog' as const, icon: BookOpen },
+    { name: t('study_log'), page: 'dailylog' as const, icon: ClipboardList },
+    { name: t('subscription'), page: 'pricing' as const, icon: CreditCard },
+    { name: t('profile'), page: 'profile' as const, icon: User },
   ];
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
@@ -62,67 +78,109 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-50">
       {/* Sidebar para desktop */}
-      <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
-        <div className="flex-1 flex flex-col min-h-0 bg-white border-r border-gray-200">
-          <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-            <div className="flex items-center flex-shrink-0 px-4">
-              <h1 className="text-xl font-bold text-gray-900">MedJourney</h1>
+      <div className="hidden md:flex md:w-72 md:flex-col md:fixed md:inset-y-0">
+        <div className="flex-1 flex flex-col min-h-0 bg-white border-r border-gray-100 shadow-sm">
+          <div className="flex-1 flex flex-col pt-8 pb-4 overflow-y-auto">
+            <div className="flex items-center justify-between px-6">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+                MedJourney
+              </h1>
+              <button 
+                onClick={() => i18n.changeLanguage(i18n.language === 'pt' ? 'en' : 'pt')}
+                className="p-2 rounded-lg hover:bg-gray-100 transition-all duration-200 flex items-center gap-2 text-sm font-medium text-gray-600"
+              >
+                {i18n.language === 'pt' ? (
+                  <>
+                    <BrazilFlagIcon className="w-5 h-5" />
+                    <span className="sr-only">Switch to English</span>
+                  </>
+                ) : (
+                  <>
+                    <UsaFlagIcon className="w-5 h-5" />
+                    <span className="sr-only">Mudar para Português</span>
+                  </>
+                )}
+              </button>
             </div>
-            <nav className="mt-5 flex-1 px-2 space-y-1">
+            
+            <nav className="mt-8 flex-1 px-4 space-y-1">
               {navigationItems.map((item) => {
                 const Icon = item.icon;
+                const isActive = currentPage === item.page;
                 return (
                   <button
                     key={item.page}
                     onClick={() => navigateTo(item.page)}
-                    className={`${
-                      currentPage === item.page
-                        ? 'bg-gray-100 text-gray-900'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                    } group flex items-center px-2 py-2 text-sm font-medium rounded-md w-full`}
+                    className={`
+                      w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg
+                      transition-all duration-200 group relative
+                      ${isActive 
+                        ? 'text-blue-600 bg-blue-50' 
+                        : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
+                      }
+                    `}
                   >
-                    <Icon className="mr-3 h-6 w-6" />
+                    <Icon className={`
+                      h-5 w-5 mr-3 transition-transform duration-200
+                      ${isActive ? 'text-blue-600 transform scale-110' : 'text-gray-400 group-hover:text-blue-600'}
+                    `} />
                     {item.name}
+                    {isActive && (
+                      <span className="absolute inset-y-0 left-0 w-1 bg-blue-600 rounded-r-full" />
+                    )}
                   </button>
                 );
               })}
             </nav>
           </div>
-          <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
+          
+          <div className="flex-shrink-0 p-4">
             <button
               onClick={handleLogout}
-              className="flex-shrink-0 w-full group block"
+              className="w-full flex items-center px-4 py-3 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 hover:text-red-600 transition-colors duration-200"
             >
-              <div className="flex items-center">
-                <div>
-                  <LogOut className="h-6 w-6 text-gray-400 group-hover:text-gray-500" />
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
-                    Sair
-                  </p>
-                </div>
-              </div>
+              <LogOut className="h-5 w-5 mr-3 text-gray-400" />
+              {t('logout')}
             </button>
           </div>
         </div>
       </div>
 
       {/* Layout principal */}
-      <div className="md:pl-64 flex flex-col flex-1">
+      <div className="md:pl-72 flex flex-col flex-1">
         {/* Header mobile */}
-        <div className="md:hidden bg-white shadow-sm">
-          <div className="px-4 py-3 flex items-center justify-between">
-            <h1 className="text-xl font-bold text-gray-900">MedJourney</h1>
-            <button
-              type="button"
-              className="p-2 rounded-md text-gray-500 hover:text-gray-900 focus:outline-none"
-              onClick={toggleSidebar}
-            >
-              <Menu className="h-6 w-6" />
-            </button>
+        <div className="md:hidden bg-white shadow-sm border-b border-gray-100">
+          <div className="px-4 py-4 flex items-center justify-between">
+            <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+              MedJourney
+            </h1>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => i18n.changeLanguage(i18n.language === 'pt' ? 'en' : 'pt')}
+                className="p-2 rounded-lg hover:bg-gray-100 transition-all duration-200 flex items-center gap-2"
+              >
+                {i18n.language === 'pt' ? (
+                  <>
+                    <BrazilFlagIcon className="w-5 h-5" />
+                    <span className="sr-only">Switch to English</span>
+                  </>
+                ) : (
+                  <>
+                    <UsaFlagIcon className="w-5 h-5" />
+                    <span className="sr-only">Mudar para Português</span>
+                  </>
+                )}
+              </button>
+              <button
+                type="button"
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+                onClick={toggleSidebar}
+              >
+                <Menu className="h-6 w-6 text-gray-600" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -131,25 +189,28 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <>
             {/* Overlay */}
             <div 
-              className="fixed inset-0 bg-black bg-opacity-50 z-40"
+              className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300"
               onClick={closeSidebar}
             />
             
             {/* Sidebar */}
-            <div className="fixed inset-y-0 left-0 w-64 bg-white z-50 shadow-lg">
-              <div className="flex items-center justify-between p-4 border-b">
-                <h2 className="text-lg font-semibold">Menu</h2>
+            <div className="fixed inset-y-0 left-0 w-72 bg-white z-50 shadow-xl transform transition-transform duration-300">
+              <div className="flex items-center justify-between p-4 border-b border-gray-100">
+                <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+                  MedJourney
+                </h2>
                 <button
                   onClick={closeSidebar}
-                  className="p-2 rounded-md text-gray-500 hover:text-gray-900"
+                  className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
                 >
-                  <X className="h-6 w-6" />
+                  <X className="h-6 w-6 text-gray-600" />
                 </button>
               </div>
               
-              <nav className="p-4 space-y-2">
+              <nav className="p-4 space-y-1">
                 {navigationItems.map((item) => {
                   const Icon = item.icon;
+                  const isActive = currentPage === item.page;
                   return (
                     <button
                       key={item.page}
@@ -157,26 +218,38 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         navigateTo(item.page);
                         closeSidebar();
                       }}
-                      className={`${
-                        currentPage === item.page
-                          ? 'bg-gray-100 text-gray-900'
-                          : 'text-gray-600 hover:bg-gray-50'
-                      } flex items-center w-full px-3 py-2 rounded-md`}
+                      className={`
+                        w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg
+                        transition-all duration-200 group relative
+                        ${isActive 
+                          ? 'text-blue-600 bg-blue-50' 
+                          : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
+                        }
+                      `}
                     >
-                      <Icon className="mr-3 h-5 w-5" />
+                      <Icon className={`
+                        h-5 w-5 mr-3 transition-transform duration-200
+                        ${isActive ? 'text-blue-600 transform scale-110' : 'text-gray-400 group-hover:text-blue-600'}
+                      `} />
                       {item.name}
+                      {isActive && (
+                        <span className="absolute inset-y-0 left-0 w-1 bg-blue-600 rounded-r-full" />
+                      )}
                     </button>
                   );
                 })}
               </nav>
               
-              <div className="absolute bottom-0 left-0 right-0 p-4 border-t">
+              <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100">
                 <button
-                  onClick={handleLogout}
-                  className="flex items-center w-full px-3 py-2 text-gray-600 hover:bg-gray-50 rounded-md"
+                  onClick={() => {
+                    handleLogout();
+                    closeSidebar();
+                  }}
+                  className="w-full flex items-center px-4 py-3 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 hover:text-red-600 transition-colors duration-200"
                 >
-                  <LogOut className="mr-3 h-5 w-5" />
-                  Sair
+                  <LogOut className="h-5 w-5 mr-3 text-gray-400" />
+                  {t('logout')}
                 </button>
               </div>
             </div>
@@ -184,13 +257,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         )}
 
         {/* Conteúdo principal */}
-        <main className="flex-1">
-          <div className="py-6">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-              {children}
-            </div>
-          </div>
-        </main>
+        <main className="flex-1 p-6">{children}</main>
       </div>
     </div>
   );

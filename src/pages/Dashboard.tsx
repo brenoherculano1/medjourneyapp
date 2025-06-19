@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Sparkles, Plus, MessageSquare } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { useAppContext } from '../contexts/AppContext';
 import { useNavigation } from '../contexts/NavigationContext';
@@ -9,6 +10,7 @@ import ApplicationsCard from '../components/dashboard/ApplicationsCard';
 import SuggestionCard from '../components/dashboard/SuggestionCard';
 
 const Dashboard: React.FC = () => {
+  const { t } = useTranslation();
   const { applications, interviewResponses, visaPlanning, user } = useAppContext();
   const { navigateTo } = useNavigation();
 
@@ -16,10 +18,10 @@ const Dashboard: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Seja Bem-vindo!</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('dashboard_welcome')}</h1>
 
           <p className="text-gray-600 mt-1">
-            Acompanhe seu progresso e gerencie seus estágios internacionais.
+            {t('dashboard_subtitle')}
           </p>
         </div>
       </div>
@@ -55,7 +57,7 @@ const Dashboard: React.FC = () => {
         {/* Quick Actions */}
         <div className="md:col-span-6">
           <div className="bg-white rounded-lg shadow-sm p-6 h-full">
-            <h2 className="text-lg font-medium text-gray-900 mb-6">Ações Rápidas</h2>
+            <h2 className="text-lg font-medium text-gray-900 mb-6">{t('dashboard_quick_actions')}</h2>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <button 
@@ -67,7 +69,7 @@ const Dashboard: React.FC = () => {
                     <div className="bg-blue-100 p-2 rounded-full mr-3">
                       <Plus size={18} className="text-blue-600" />
                     </div>
-                    <span className="font-medium text-gray-900 group-hover:text-blue-700">Nova Aplicação</span>
+                    <span className="font-medium text-gray-900 group-hover:text-blue-700">{t('dashboard_new_application')}</span>
                   </div>
                 </div>
               </button>
@@ -81,7 +83,7 @@ const Dashboard: React.FC = () => {
                     <div className="bg-green-100 p-2 rounded-full mr-3">
                       <MessageSquare size={18} className="text-green-600" />
                     </div>
-                    <span className="font-medium text-gray-900 group-hover:text-blue-700">Treinar Entrevista</span>
+                    <span className="font-medium text-gray-900 group-hover:text-blue-700">{t('dashboard_train_interview')}</span>
                   </div>
                 </div>
               </button>
@@ -95,7 +97,7 @@ const Dashboard: React.FC = () => {
                     <div className="bg-orange-100 p-2 rounded-full mr-3">
                       <PlaneIcon size={18} className="text-orange-600" />
                     </div>
-                    <span className="font-medium text-gray-900 group-hover:text-blue-700">Planejar Viagem</span>
+                    <span className="font-medium text-gray-900 group-hover:text-blue-700">{t('dashboard_plan_trip')}</span>
                   </div>
                 </div>
               </button>
@@ -112,7 +114,7 @@ const Dashboard: React.FC = () => {
                       <CalendarIcon size={18} className="text-purple-600" />
                     </div>
                     <span className="font-medium text-gray-900 group-hover:text-blue-700">
-                      Agendar Mentoria Gratuita
+                      {t('dashboard_schedule_mentoring')}
                     </span>
                   </div>
                 </div>
@@ -221,6 +223,7 @@ const MiniUsaFlag = ({ className = "" }) => (
 const USMLE_CONGRATS_KEY = 'usmle-congrats-shown';
 
 const UsmleTrackerCard: React.FC = () => {
+  const { t } = useTranslation();
   const [progress, setProgress] = useState(0);
   const [answer, setAnswer] = useState<null | 'done' | 'notyet'>(null);
   const { navigateTo } = useNavigation();
@@ -230,24 +233,23 @@ const UsmleTrackerCard: React.FC = () => {
     if (saved) {
       const data = JSON.parse(saved);
       let filled = 0;
-      if (data.step1 && data.step1 !== 'Não feito') filled++;
+      if (data.step1 && data.step1 !== t('usmle_not_done')) filled++;
       if (data.step2Done && data.step2Score) filled++;
       else if (data.step2Done) filled += 0.5;
-      if (data.oet === 'Concluído') filled++;
-      if (data.ecfmg && data.ecfmg !== 'Não iniciado') filled++;
-      if (data.epic === 'Feita') filled++;
+      if (data.oet === t('usmle_completed')) filled++;
+      if (data.ecfmg && data.ecfmg !== t('usmle_not_started')) filled++;
+      if (data.epic === t('usmle_done')) filled++;
       const pct = Math.round((filled / 5) * 100);
       setProgress(pct);
     } else {
       setProgress(0);
     }
-  }, []);
+  }, [t]);
 
   // Card comemorativo interativo ao atingir 100%
   if (progress === 100) {
     return (
-      <div
-        className="relative bg-white border-4 rounded-xl p-6 h-full flex flex-col justify-between shadow-lg animate-fade-in"
+      <div className="relative bg-white border-4 rounded-xl p-6 h-full flex flex-col justify-between shadow-lg animate-fade-in"
         style={{
           borderColor: '#3b82f6 #ef4444 #3b82f6 #ef4444',
           borderStyle: 'solid',
@@ -274,21 +276,8 @@ const UsmleTrackerCard: React.FC = () => {
         </style>
         <div className="flex flex-col items-center mb-4">
           <div className="flex items-center justify-center mb-2">
-            <span
-              className="text-2xl md:text-3xl font-bold text-center"
-              style={{
-                color: '#1e3a8a',
-                textShadow: '0 1px 6px rgba(0,0,0,0.10), 0 0px 1px #fff',
-                background: 'none',
-                WebkitBackgroundClip: 'initial',
-                WebkitTextFillColor: 'initial',
-                borderRadius: '1em',
-                border: 'none',
-                boxShadow: 'none',
-                padding: 0,
-              }}
-            >
-              🎉 "Vimos que você completou o processo para o USMLE. Meus parabéns, futuro(a) M.D.!!"
+            <span className="text-2xl md:text-3xl font-bold text-center" style={{ color: '#1e3a8a', textShadow: '0 1px 6px rgba(0,0,0,0.10), 0 0px 1px #fff', background: 'none', WebkitBackgroundClip: 'initial', WebkitTextFillColor: 'initial', borderRadius: '1em', border: 'none', boxShadow: 'none', padding: 0 }}>
+              🎉 {t('usmle_congrats')}
             </span>
           </div>
           <div className="flex items-center gap-2 mt-4 justify-center">
@@ -298,54 +287,38 @@ const UsmleTrackerCard: React.FC = () => {
           </div>
         </div>
         <div className="mt-6 mb-4 text-center text-lg font-medium text-gray-800">
-          Me responde uma pergunta: você já fez os estágios necessários para ter seu tão sonhado Match?
+          {t('usmle_question')}
         </div>
         {!answer && (
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-bounce">
-            <button
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-full shadow transition"
-              onClick={() => setAnswer('done')}
-            >
-              Já fiz!!
+            <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-full shadow transition" onClick={() => setAnswer('done')}>
+              {t('usmle_answer_done')}
             </button>
-            <button
-              className="bg-white border-2 border-blue-600 hover:bg-blue-50 text-blue-700 font-semibold px-6 py-2 rounded-full shadow transition"
-              onClick={() => setAnswer('notyet')}
-            >
-              Ainda não, será meu foco agora!
+            <button className="bg-white border-2 border-blue-600 hover:bg-blue-50 text-blue-700 font-semibold px-6 py-2 rounded-full shadow transition" onClick={() => setAnswer('notyet')}>
+              {t('usmle_answer_notyet')}
             </button>
           </div>
         )}
         {answer === 'done' && (
           <div className="mt-6 text-center text-base font-medium text-blue-800 animate-fade-in">
-            Incrível! Ficamos felizes de ver você tão bem posicionado. Que sua aplicação seja um sucesso — estamos na torcida para ver você conquistando o Match em grande estilo. 👏🇺🇸
+            {t('usmle_msg_done')}
           </div>
         )}
         {answer === 'notyet' && (
           <div className="mt-6 text-center animate-fade-in">
             <div className="text-base font-medium text-blue-800 mb-4">
-              Esse é o momento perfeito. Agora que você dominou o USMLE, falta só o próximo passo estratégico: os estágios certos.<br /><br />
-              Nessa fase, a maioria comete erros caros, perde tempo com estágios fracos ou não entende o jogo real das cartas de recomendação.<br /><br />
-              Nós criamos uma mentoria individual pensada exatamente para quem está no seu nível — para alinhar sua realidade com o tipo de aplicação que realmente vence.
+              {t('usmle_msg_notyet')}
             </div>
-            <a
-              href="https://wa.me/+5555839861362?text=Ol%C3%A1%2C%20acabei%20de%20finalizar%20os%20Steps%2C%20mas%20ainda%20n%C3%A3o%20fiz%20os%20est%C3%A1gios%20necess%C3%A1rios%20para%20conseguir%20meu%20Match%2C%20quero%20marcar%20uma%20mentoria%20com%20um%20especialista!"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block mt-2 bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded-full shadow transition"
-            >
-              📲 Quero conversar com um estrategista
+            <a href="https://wa.me/+5555839861362?text=Ol%C3%A1%2C%20acabei%20de%20finalizar%20os%20Steps%2C%20mas%20ainda%20n%C3%A3o%20fiz%20os%20est%C3%A1gios%20necess%C3%A1rios%20para%20conseguir%20meu%20Match%2C%20quero%20marcar%20uma%20mentoria%20com%20um%20especialista!" target="_blank" rel="noopener noreferrer" className="inline-block mt-2 bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded-full shadow transition">
+              📲 {t('usmle_btn_mentoring')}
             </a>
           </div>
         )}
         <div className="mb-4 mt-8">
           <div className="w-full bg-gray-200 rounded-full h-4 mb-2">
-            <div
-              className="bg-gradient-to-r from-blue-800 to-red-700 h-4 rounded-full animate-pulse"
-              style={{ width: '100%' }}
-            />
+            <div className="bg-gradient-to-r from-blue-800 to-red-700 h-4 rounded-full animate-pulse" style={{ width: '100%' }} />
           </div>
-          <div className="text-right text-base font-bold text-blue-700">100% completo</div>
+          <div className="text-right text-base font-bold text-blue-700">{t('usmle_100_complete')}</div>
         </div>
       </div>
     );
@@ -355,22 +328,15 @@ const UsmleTrackerCard: React.FC = () => {
   return (
     <div className="bg-white rounded-lg shadow-sm p-6 h-full flex flex-col justify-between">
       <div>
-        <h2 className="text-lg font-medium text-gray-900 mb-2">USMLE Tracker</h2>
-        <p className="text-gray-600 text-sm mb-4">Acompanhe seu progresso nos exames da jornada internacional.</p>
+        <h2 className="text-lg font-medium text-gray-900 mb-2">{t('usmle_title')}</h2>
+        <p className="text-gray-600 text-sm mb-4">{t('usmle_subtitle')}</p>
         <div className="w-full bg-gray-200 rounded-full h-4 mb-2">
-          <div
-            className="bg-blue-500 h-4 rounded-full transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          />
+          <div className="bg-blue-500 h-4 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
         </div>
         <div className="text-right text-sm font-medium text-blue-700">{progress}%</div>
       </div>
-      <Button
-        variant="secondary"
-        className="w-full rounded-full text-blue-700 bg-blue-100 hover:bg-blue-200"
-        onClick={() => navigateTo('usmle')}
-      >
-        Atualize seu Status do USMLE
+      <Button variant="secondary" className="w-full rounded-full text-blue-700 bg-blue-100 hover:bg-blue-200" onClick={() => navigateTo('usmle')}>
+        {t('usmle_btn_update_status')}
       </Button>
     </div>
   );

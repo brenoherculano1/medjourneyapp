@@ -6,12 +6,14 @@ import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 import { InterviewCategory, InterviewResponse } from '../types';
 import { Play } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const InterviewPrep: React.FC = () => {
   const { interviewResponses, addInterviewResponse, deleteInterviewResponse } = useAppContext();
   const [isSimulating, setIsSimulating] = useState(false);
   const [editingResponse, setEditingResponse] = useState<InterviewResponse | null>(null);
   const [editedResponseText, setEditedResponseText] = useState('');
+  const { t } = useTranslation();
 
   const handleSaveResponse = (questionId: string, question: string, response: string, category: InterviewCategory) => {
     addInterviewResponse({
@@ -52,9 +54,9 @@ const InterviewPrep: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Simulador de Entrevistas</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t('interview_title')}</h1>
           <p className="text-gray-600 mt-1">
-            Pratique para entrevistas em inglês com nosso simulador
+            {t('interview_subtitle')}
           </p>
         </div>
         {!isSimulating && !editingResponse && (
@@ -64,7 +66,7 @@ const InterviewPrep: React.FC = () => {
             leftIcon={<Play size={16} />}
             onClick={() => setIsSimulating(true)}
           >
-            Iniciar Simulação
+            {t('interview_start_simulation')}
           </Button>
         )}
       </div>
@@ -72,15 +74,15 @@ const InterviewPrep: React.FC = () => {
       {isSimulating ? (
         <InterviewSimulator onSaveResponse={handleSaveResponse} />
       ) : editingResponse ? (
-        <Card title={`Editar Resposta - ${editingResponse.category}`}>
+        <Card title={t('interview_edit_response', { category: editingResponse.category })}>
           <div className="space-y-4">
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Pergunta:</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">{t('interview_question')}</h3>
               <p className="bg-gray-50 p-3 rounded text-gray-800 italic">{editingResponse.question}</p>
             </div>
             <div>
               <label htmlFor="response" className="block text-sm font-medium text-gray-700 mb-2">
-                Sua resposta:
+                {t('interview_your_response')}
               </label>
               <textarea
                 id="response"
@@ -95,14 +97,14 @@ const InterviewPrep: React.FC = () => {
                 variant="outline"
                 onClick={() => setEditingResponse(null)}
               >
-                Cancelar
+                {t('interview_cancel')}
               </Button>
               <Button
                 variant="primary"
                 onClick={handleUpdateResponse}
                 disabled={!editedResponseText.trim()}
               >
-                Atualizar Resposta
+                {t('interview_update_response')}
               </Button>
             </div>
           </div>

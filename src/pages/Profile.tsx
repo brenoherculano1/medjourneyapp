@@ -4,8 +4,10 @@ import { useAppContext } from '../contexts/AppContext';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const Profile = () => {
+  const { t } = useTranslation();
   const { user } = useAppContext();
   const navigate = useNavigate();
   const [fullName, setFullName] = useState('');
@@ -29,7 +31,7 @@ const Profile = () => {
           setUniversity(data.university || '');
           setGraduationYear(data.graduationYear || '');
         } else {
-          setFullName(user.displayName || '');
+          setFullName(user.name || '');
           setEmail(user.email || '');
         }
       });
@@ -38,7 +40,7 @@ const Profile = () => {
 
   const handleSave = async () => {
     if (!user?.uid) {
-      alert('Você precisa estar logado para salvar seus dados.');
+      alert(t('profile_login_required'));
       navigate('/login');
       return;
     }
@@ -49,42 +51,42 @@ const Profile = () => {
         graduationYear,
         email,
       });
-      alert('Dados salvos com sucesso!');
+      alert(t('profile_save_success'));
     } catch (error) {
-      alert('Erro ao salvar os dados.');
-      console.error('Erro ao salvar perfil:', error);
+      alert(t('profile_save_error'));
+      console.error(t('profile_save_error_log'), error);
     }
   };
 
   return (
     <div>
-      <h2 className="text-2xl font-semibold mb-6">Informações Pessoais</h2>
+      <h2 className="text-2xl font-semibold mb-6">{t('profile_personal_info')}</h2>
       <div className="space-y-4 max-w-xl">
         <input
           type="text"
           className="w-full p-2 border rounded"
-          placeholder="Nome Completo"
+          placeholder={t('profile_full_name')}
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
         />
         <input
           type="email"
           className="w-full p-2 border rounded"
-          placeholder="Email"
+          placeholder={t('profile_email')}
           value={email}
           disabled
         />
         <input
           type="text"
           className="w-full p-2 border rounded"
-          placeholder="Universidade"
+          placeholder={t('profile_university')}
           value={university}
           onChange={(e) => setUniversity(e.target.value)}
         />
         <input
           type="text"
           className="w-full p-2 border rounded"
-          placeholder="Ano de Graduação"
+          placeholder={t('profile_graduation_year')}
           value={graduationYear}
           onChange={(e) => setGraduationYear(e.target.value)}
         />
@@ -92,7 +94,7 @@ const Profile = () => {
           className="bg-blue-600 text-white px-4 py-2 rounded"
           onClick={handleSave}
         >
-          Salvar Alterações
+          {t('profile_save_changes')}
         </button>
       </div>
     </div>

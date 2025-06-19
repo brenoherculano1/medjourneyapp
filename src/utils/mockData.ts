@@ -17,7 +17,7 @@ export const mockApplications: Application[] = [
     deadline: '2023-12-15',
     status: 'Preparando',
     website: 'https://www.ucsf.edu/international-programs',
-    notes: 'Preciso atualizar meu CV e pedir carta para o Dr. Santos',
+    notes: 'Need to update CV and request letter from Dr. Santos',
     documents: {
       cv: { status: 'Em Progresso', notes: 'Atualizar publicações recentes' },
       personalStatement: { status: 'Pendente', notes: '' },
@@ -36,7 +36,7 @@ export const mockApplications: Application[] = [
     deadline: '2023-11-20',
     status: 'Enviado',
     website: 'https://www.mayoclinic.org/international',
-    notes: 'Enviei aplicação completa. Aguardando resposta inicial.',
+    notes: 'Complete application sent. Waiting for initial response.',
     documents: {
       cv: { status: 'Concluído', notes: '' },
       personalStatement: { status: 'Concluído', notes: '' },

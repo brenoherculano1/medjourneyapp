@@ -1,49 +1,41 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 
 interface CardProps {
-  children: ReactNode;
   title?: string;
-  subtitle?: string;
-  footer?: ReactNode;
+  children: React.ReactNode;
   className?: string;
-  headerActions?: ReactNode;
-  hoverable?: boolean;
-  border?: boolean;
+  headerActions?: React.ReactNode;
+  footer?: React.ReactNode;
 }
 
 const Card: React.FC<CardProps> = ({
-  children,
   title,
-  subtitle,
-  footer,
+  children,
   className = '',
   headerActions,
-  hoverable = false,
-  border = false,
+  footer,
 }) => {
   return (
-    <div 
-      className={`
-        bg-white rounded-lg shadow-sm overflow-hidden 
-        ${hoverable ? 'hover:shadow-md transition-shadow duration-200' : ''} 
-        ${border ? 'border border-gray-200' : ''} 
-        ${className}
-      `}
-    >
-      {(title || subtitle || headerActions) && (
-        <div className="px-6 py-4 flex justify-between items-start border-b border-gray-100">
-          <div>
-            {title && <h3 className="text-lg font-medium text-gray-900">{title}</h3>}
-            {subtitle && <p className="mt-1 text-sm text-gray-500">{subtitle}</p>}
-          </div>
+    <div className={`bg-white rounded-xl shadow-sm border border-gray-100 transition-all duration-300 ${className}`}>
+      {(title || headerActions) && (
+        <div className="flex justify-between items-center p-6 border-b border-gray-100">
+          {title && (
+            <h3 className="text-lg font-semibold text-gray-900 tracking-tight">
+              {title}
+            </h3>
+          )}
           {headerActions && (
-            <div className="ml-4">{headerActions}</div>
+            <div className="flex items-center space-x-4">
+              {headerActions}
+            </div>
           )}
         </div>
       )}
-      <div className="px-6 py-5">{children}</div>
+      
+      <div className="p-6">{children}</div>
+      
       {footer && (
-        <div className="px-6 py-3 bg-gray-50 border-t border-gray-100">
+        <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 rounded-b-xl">
           {footer}
         </div>
       )}

@@ -6,8 +6,10 @@ import Button from '../components/common/Button';
 import ApplicationForm from '../components/appTrackr/ApplicationForm';
 import DocumentChecklistForm from '../components/appTrackr/DocumentChecklistForm';
 import { Application, DocumentChecklist } from '../types';
+import { useTranslation } from 'react-i18next';
 
 const AppTrackr: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const { applications, addApplication, updateApplication, deleteApplication } = useAppContext();
   const [isAddingApplication, setIsAddingApplication] = useState(false);
   const [editingApplication, setEditingApplication] = useState<Application | null>(null);
@@ -26,7 +28,7 @@ const AppTrackr: React.FC = () => {
   };
 
   const handleDeleteApplication = (id: string) => {
-    if (confirm('Tem certeza que deseja excluir esta aplicação?')) {
+    if (confirm(t('applications_confirm_delete'))) {
       deleteApplication(id);
     }
   };
@@ -63,16 +65,36 @@ const AppTrackr: React.FC = () => {
   // Format date
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('pt-BR').format(date);
+    return new Intl.DateTimeFormat(i18n.language === 'en' ? 'en-US' : 'pt-BR').format(date);
+  };
+
+  // Normaliza tipo para tradução
+  const getTypeLabel = (type: string) => {
+    const key = `application_type_${type.toLowerCase()}`;
+    return t(key, type);
+  };
+
+  // Normaliza status para tradução
+  const getStatusLabel = (status: string) => {
+    // Mapeamento para as chaves corretas do translation.json
+    const statusMap: Record<string, string> = {
+      'Preparando': 'status_preparing',
+      'Enviado': 'status_sent',
+      'Aguardando': 'status_waiting',
+      'Aceito': 'status_accepted',
+      'Rejeitado': 'status_rejected',
+    };
+    const key = statusMap[status] || status;
+    return t(key, status);
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Meus Estágios</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t('applications_title')}</h1>
           <p className="text-gray-600 mt-1">
-            Gerencie seus estágios médicos internacionais
+            {t('applications_subtitle')}
           </p>
         </div>
         <Button
@@ -85,12 +107,12 @@ const AppTrackr: React.FC = () => {
           }}
           disabled={isAddingApplication || editingApplication !== null || showDocumentChecklist !== null}
         >
-          Novo Estágio
+          {t('applications_new')}
         </Button>
       </div>
 
       {isAddingApplication && (
-        <Card title="Adicionar Nova Aplicação">
+        <Card title={t('applications_add_new')}>
           <ApplicationForm
             onSubmit={handleAddApplication}
             isEdit={false}
@@ -99,7 +121,7 @@ const AppTrackr: React.FC = () => {
       )}
 
       {editingApplication && (
-        <Card title="Editar Aplicação">
+        <Card title={t('applications_edit')}>
           <ApplicationForm
             onSubmit={handleUpdateApplication}
             initialData={editingApplication}
@@ -109,7 +131,7 @@ const AppTrackr: React.FC = () => {
       )}
 
       {showDocumentChecklist && (
-        <Card title="Checklist de Documentos">
+        <Card title={t('applications_checklist')}>
           <DocumentChecklistForm
             documentChecklist={applications.find(app => app.id === showDocumentChecklist)?.documents || {
               cv: { status: 'Pendente', notes: '' },
@@ -129,12 +151,12 @@ const AppTrackr: React.FC = () => {
         {Object.entries(applicationsByStatus).map(([status, apps]) => (
           <div key={status} className={`space-y-4 ${statusStyles[status].bgColor} p-5 rounded-lg ${statusStyles[status].borderColor} border`}>
             <div className="flex justify-between items-center">
-              <h2 className={`font-semibold ${statusStyles[status].color}`}>{status} ({apps.length})</h2>
+              <h2 className={`font-semibold ${statusStyles[status].color}`}>{getStatusLabel(status)} ({apps.length})</h2>
             </div>
 
             {apps.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
-                Nenhuma aplicação neste status
+                {t('applications_none_status')}
               </div>
             ) : (
               <div className="space-y-3">
@@ -145,16 +167,13 @@ const AppTrackr: React.FC = () => {
                   >
                     <div className="space-y-3">
                       <div className="flex justify-between">
-                        <span className="text-sm font-medium text-gray-500">{app.type}</span>
-                        <span className="text-sm text-gray-500">Prazo: {formatDate(app.deadline)}</span>
+                        <span className="text-sm font-medium text-gray-500">{getTypeLabel(app.type)}</span>
+                        <span className="text-sm text-gray-500">{t('applications_deadline')}: {formatDate(app.deadline)}</span>
                       </div>
-                      
                       <h3 className="font-medium text-gray-900">{app.hospitalName}</h3>
-                      
                       {app.notes && (
                         <p className="text-sm text-gray-600">{app.notes}</p>
                       )}
-                      
                       <div className="pt-2 flex flex-wrap gap-2">
                         <Button
                           variant="outline"
@@ -165,8 +184,9 @@ const AppTrackr: React.FC = () => {
                             setIsAddingApplication(false);
                             setEditingApplication(null);
                           }}
+                          className="rounded-full px-6 py-2 font-bold border-2 border-blue-600 text-blue-700 bg-white hover:bg-blue-50 hover:shadow-lg hover:scale-[1.03] transition-all duration-150 w-full sm:w-auto mb-2 flex items-center justify-center gap-2 shadow-sm"
                         >
-                          Documentos
+                          {t('applications_documents', 'Documentos')}
                         </Button>
                         <Button
                           variant="outline"
@@ -176,15 +196,17 @@ const AppTrackr: React.FC = () => {
                             setIsAddingApplication(false);
                             setShowDocumentChecklist(null);
                           }}
+                          className="rounded-full px-6 py-2 font-bold border-2 border-blue-600 text-blue-700 bg-white hover:bg-blue-50 hover:shadow-lg hover:scale-[1.03] transition-all duration-150 w-full sm:w-auto mb-2 flex items-center justify-center gap-2 shadow-sm"
                         >
-                          Editar
+                          {t('applications_edit_btn', 'Editar')}
                         </Button>
                         <Button
                           variant="danger"
                           size="sm"
                           onClick={() => handleDeleteApplication(app.id)}
+                          className="rounded-full px-6 py-2 font-bold bg-red-600 text-white hover:bg-red-700 hover:shadow-lg hover:scale-[1.03] transition-all duration-150 w-full sm:w-auto flex items-center justify-center gap-2 shadow-sm"
                         >
-                          Excluir
+                          {t('applications_delete_btn', 'Excluir')}
                         </Button>
                       </div>
                     </div>

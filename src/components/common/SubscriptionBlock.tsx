@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { useStripe } from '@stripe/react-stripe-js';
 import { createCheckoutSession } from '../../lib/stripe';
 import Button from './Button';
+import { useTranslation } from 'react-i18next';
 
 const SubscriptionBlock: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const stripe = useStripe();
   const [loading, setLoading] = useState(false);
 
@@ -28,11 +30,11 @@ const SubscriptionBlock: React.FC = () => {
 
       if (error) {
         console.error('Error redirecting to checkout:', error);
-        alert('Erro ao redirecionar para o pagamento. Tente novamente.');
+        alert(t('error_redirect_checkout'));
       }
     } catch (error) {
       console.error('Error creating checkout session:', error);
-      alert('Erro ao criar sessão de pagamento. Tente novamente.');
+      alert(t('error_create_checkout'));
     } finally {
       setLoading(false);
     }
@@ -41,10 +43,14 @@ const SubscriptionBlock: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
       <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center">
-        <h2 className="text-2xl font-bold text-blue-700 mb-4">Acesso Restrito</h2>
+        <div className="flex justify-end mb-2">
+          <button onClick={() => i18n.changeLanguage('pt')} className={`px-3 py-1 rounded-l ${i18n.language === 'pt' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>PT</button>
+          <button onClick={() => i18n.changeLanguage('en')} className={`px-3 py-1 rounded-r ${i18n.language === 'en' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>EN</button>
+        </div>
+        <h2 className="text-2xl font-bold text-blue-700 mb-4">{t('restricted_access')}</h2>
         <p className="mb-6 text-gray-700">
-          O MedJourney é uma plataforma exclusiva para médicos em jornada internacional.<br />
-          Acesse com sua assinatura ativa.
+          {t('platform_exclusive')}<br />
+          {t('active_subscription')}
         </p>
         <Button
           variant="primary"
@@ -53,7 +59,7 @@ const SubscriptionBlock: React.FC = () => {
           disabled={loading}
           className="w-full"
         >
-          {loading ? 'Carregando...' : 'Assinar agora'}
+          {loading ? t('loading') : t('subscribe_annual')}
         </Button>
       </div>
     </div>

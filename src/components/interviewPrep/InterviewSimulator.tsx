@@ -4,12 +4,14 @@ import Card from '../common/Card';
 import Button from '../common/Button';
 import { InterviewCategory, InterviewQuestion } from '../../types';
 import { INTERVIEW_QUESTIONS } from '../../utils/constants';
+import { useTranslation } from 'react-i18next';
 
 interface InterviewSimulatorProps {
   onSaveResponse: (questionId: string, question: string, response: string, category: InterviewCategory) => void;
 }
 
 const InterviewSimulator: React.FC<InterviewSimulatorProps> = ({ onSaveResponse }) => {
+  const { t } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState<InterviewCategory | 'Todas'>('Todas');
   const [questionsQueue, setQuestionsQueue] = useState<InterviewQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -96,12 +98,12 @@ const InterviewSimulator: React.FC<InterviewSimulatorProps> = ({ onSaveResponse 
   };
 
   return (
-    <Card title="Simulador de Entrevistas" className="h-full">
+    <Card title={t('interview_title')} className="h-full">
       {!isSimulating ? (
         <div className="space-y-6">
           <div>
             <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
-              Selecione uma categoria:
+              {t('interview_select_category')}
             </label>
             <select
               id="category"
@@ -109,15 +111,14 @@ const InterviewSimulator: React.FC<InterviewSimulatorProps> = ({ onSaveResponse 
               onChange={(e) => setSelectedCategory(e.target.value as InterviewCategory | 'Todas')}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             >
-              <option value="Todas">Todas as categorias</option>
+              <option value="Todas">{t('interview_all_categories')}</option>
             </select>
           </div>
           
           <div className="bg-blue-50 rounded-lg p-4 text-center">
-            <h3 className="font-medium text-blue-800 mb-2">Como funciona:</h3>
+            <h3 className="font-medium text-blue-800 mb-2">{t('interview_how_it_works_title')}</h3>
             <p className="text-blue-700 text-sm">
-              Você receberá 5 perguntas aleatórias em inglês, uma por vez, e terá 2 minutos para responder cada.
-              Pratique como se estivesse em uma entrevista real!
+              {t('interview_how_it_works_desc')}
             </p>
           </div>
           
@@ -129,7 +130,7 @@ const InterviewSimulator: React.FC<InterviewSimulatorProps> = ({ onSaveResponse 
               disabled={filteredQuestions.length < 5}
               leftIcon={<CameraIcon size={20} />}
             >
-              Iniciar Treino
+              {t('interview_start_training')}
             </Button>
           </div>
         </div>
@@ -155,14 +156,14 @@ const InterviewSimulator: React.FC<InterviewSimulatorProps> = ({ onSaveResponse 
           </div>
           
           <div className="bg-gray-50 p-4 rounded-lg mb-4">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Pergunta {currentIndex + 1} de 5:</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('interview_question_number', { number: currentIndex + 1 })}</h3>
             <p className="text-gray-800 italic">{questionsQueue[currentIndex]?.question}</p>
           </div>
           
           <div>
             <div className="flex justify-between items-center mb-2">
               <label htmlFor="response" className="block text-sm font-medium text-gray-700">
-                Sua resposta:
+                {t('interview_your_response')}
               </label>
               <div className="flex items-center">
                 {timerActive ? (
@@ -171,7 +172,7 @@ const InterviewSimulator: React.FC<InterviewSimulatorProps> = ({ onSaveResponse 
                   <MicOff size={16} className="text-red-500 mr-1" />
                 )}
                 <span className="text-xs text-gray-500">
-                  {timerActive ? 'Gravando resposta...' : 'Tempo esgotado'}
+                  {timerActive ? t('interview_recording') : t('interview_time_up')}
                 </span>
               </div>
             </div>
@@ -181,7 +182,7 @@ const InterviewSimulator: React.FC<InterviewSimulatorProps> = ({ onSaveResponse 
               onChange={(e) => setResponse(e.target.value)}
               rows={6}
               className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="Digite sua resposta em inglês..."
+              placeholder={t('interview_placeholder')}
               disabled={!timerActive}
             />
           </div>
@@ -193,16 +194,16 @@ const InterviewSimulator: React.FC<InterviewSimulatorProps> = ({ onSaveResponse 
                 variant="outline"
                 size="md"
               >
-                Pausar Temporizador
+                {t('interview_pause_timer')}
               </Button>
             )}
             <Button 
               onClick={handleNext}
               variant="primary"
               size="md"
-              disabled={!response.trim()}
+              disabled={!response.trim() && timerActive}
             >
-              {currentIndex < 4 ? 'Próxima' : 'Concluir Treino'}
+              {currentIndex < 4 ? t('interview_next_question') : t('interview_finish')}
             </Button>
           </div>
         </div>

@@ -3,6 +3,7 @@ import { Clock, Edit, Trash2 } from 'lucide-react';
 import Card from '../common/Card';
 import Button from '../common/Button';
 import { InterviewResponse } from '../../types';
+import { useTranslation } from 'react-i18next';
 
 interface ResponseListProps {
   responses: InterviewResponse[];
@@ -11,6 +12,7 @@ interface ResponseListProps {
 }
 
 const ResponseList: React.FC<ResponseListProps> = ({ responses, onDelete, onEdit }) => {
+  const { t, i18n } = useTranslation();
   // Sort responses by date (newest first)
   const sortedResponses = [...responses].sort((a, b) => {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
@@ -19,7 +21,7 @@ const ResponseList: React.FC<ResponseListProps> = ({ responses, onDelete, onEdit
   // Format date to a readable format
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('pt-BR', { 
+    return new Intl.DateTimeFormat(i18n.language === 'en' ? 'en-US' : 'pt-BR', { 
       day: '2-digit', 
       month: '2-digit', 
       year: 'numeric',
@@ -28,15 +30,22 @@ const ResponseList: React.FC<ResponseListProps> = ({ responses, onDelete, onEdit
     }).format(date);
   };
 
+  const categoryMap: Record<string, string> = {
+    'Pessoal': t('interview_category_personal', 'Personal'),
+    'Clínica': t('interview_category_clinical', 'Clinical'),
+    'Ética': t('interview_category_ethics', 'Ethics'),
+    'Storytelling': t('interview_category_storytelling', 'Storytelling'),
+  };
+
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold text-gray-900">Minhas Respostas</h2>
+      <h2 className="text-xl font-semibold text-gray-900">{t('interview_my_responses', 'My Responses')}</h2>
       
       {sortedResponses.length === 0 ? (
         <Card>
           <div className="text-center py-8">
-            <p className="text-gray-500 mb-2">Você ainda não salvou nenhuma resposta</p>
-            <p className="text-sm text-gray-400">Use o simulador para praticar suas respostas de entrevista</p>
+            <p className="text-gray-500 mb-2">{t('interview_no_responses')}</p>
+            <p className="text-sm text-gray-400">{t('interview_use_simulator')}</p>
           </div>
         </Card>
       ) : (
@@ -46,7 +55,7 @@ const ResponseList: React.FC<ResponseListProps> = ({ responses, onDelete, onEdit
               <div className="space-y-4">
                 <div className="flex justify-between items-start">
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    {response.category}
+                    {categoryMap[response.category] || response.category}
                   </span>
                   <div className="flex items-center text-sm text-gray-500">
                     <Clock size={14} className="mr-1" />
@@ -67,7 +76,7 @@ const ResponseList: React.FC<ResponseListProps> = ({ responses, onDelete, onEdit
                     leftIcon={<Edit size={16} />}
                     onClick={() => onEdit(response)}
                   >
-                    Editar
+                    {t('interview_edit', 'Edit')}
                   </Button>
                   <Button
                     variant="danger"
@@ -75,7 +84,7 @@ const ResponseList: React.FC<ResponseListProps> = ({ responses, onDelete, onEdit
                     leftIcon={<Trash2 size={16} />}
                     onClick={() => onDelete(response.id)}
                   >
-                    Excluir
+                    {t('interview_delete', 'Delete')}
                   </Button>
                 </div>
               </div>
