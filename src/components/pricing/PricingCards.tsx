@@ -158,20 +158,20 @@ const PricingCards: React.FC = () => {
               <div className="flex justify-center mb-3">
                 {plan.icon}
               </div>
-              <h3 className="text-xl font-bold text-gray-900">{t(plan.title)}</h3>
-              <p className="text-gray-500 mt-2">{plan.description}</p>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">{t(plan.title)}</h3>
+              <p className="text-gray-500 dark:text-gray-300 mt-2">{plan.description}</p>
             </div>
             <div className="flex justify-center items-baseline my-8">
-              <span className="text-4xl font-extrabold text-gray-900">{plan.price}</span>
-              <span className="ml-1 text-xl text-gray-500">{plan.period}</span>
+              <span className="text-4xl font-extrabold text-gray-900 dark:text-white">{plan.price}</span>
+              <span className="ml-1 text-xl text-gray-500 dark:text-gray-300">{plan.period}</span>
             </div>
             <ul className="space-y-4 mb-8">
               {plan.features.map((feature, idx) => (
                 <li key={idx} className="flex items-start">
-                  <span className={`flex-shrink-0 h-5 w-5 rounded-full ${feature.included ? 'text-green-500' : 'text-gray-400'} mr-2`}>
+                  <span className={`flex-shrink-0 h-5 w-5 rounded-full ${feature.included ? 'text-green-500' : 'text-gray-400 dark:text-gray-500'} mr-2`}>
                     {feature.included ? <Check size={20} /> : '–'}
                   </span>
-                  <span className={`text-sm ${feature.included ? 'text-gray-700' : 'text-gray-500'}`}>{feature.text}</span>
+                  <span className={`text-sm ${feature.included ? 'text-gray-700 dark:text-gray-200' : 'text-gray-500 dark:text-gray-400'}`}>{feature.text}</span>
                 </li>
               ))}
             </ul>

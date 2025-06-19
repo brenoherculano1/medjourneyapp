@@ -92,8 +92,8 @@ const AppTrackr: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('applications_title')}</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('applications_title')}</h1>
+          <p className="text-gray-600 dark:text-gray-300 mt-1">
             {t('applications_subtitle')}
           </p>
         </div>
@@ -167,12 +167,12 @@ const AppTrackr: React.FC = () => {
                   >
                     <div className="space-y-3">
                       <div className="flex justify-between">
-                        <span className="text-sm font-medium text-gray-500">{getTypeLabel(app.type)}</span>
-                        <span className="text-sm text-gray-500">{t('applications_deadline')}: {formatDate(app.deadline)}</span>
+                        <span className="text-sm font-medium text-gray-500 dark:text-gray-400">{getTypeLabel(app.type)}</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">{t('applications_deadline')}: {formatDate(app.deadline)}</span>
                       </div>
-                      <h3 className="font-medium text-gray-900">{app.hospitalName}</h3>
+                      <h3 className="font-medium text-gray-900 dark:text-white">{app.hospitalName}</h3>
                       {app.notes && (
-                        <p className="text-sm text-gray-600">{app.notes}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">{app.notes}</p>
                       )}
                       <div className="pt-2 flex flex-wrap gap-2">
                         <Button

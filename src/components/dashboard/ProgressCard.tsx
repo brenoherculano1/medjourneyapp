@@ -56,11 +56,11 @@ const ProgressCard: React.FC<ProgressCardProps> = ({
       <div className="flex justify-between items-center mb-2">
         <div className="flex items-center gap-2">
           {getProgressIcon(progress)}
-          <span className="text-sm font-medium text-gray-700">{label}</span>
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{label}</span>
         </div>
-        <span className="text-sm font-medium text-gray-700">{Math.round(progress)}%</span>
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{Math.round(progress)}%</span>
       </div>
-      <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+      <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
         <div
           className={`h-2.5 rounded-full transition-all duration-1000 ease-out ${getProgressColor(progress)}`}
           style={{ width: `${progress}%` }}
@@ -81,18 +81,18 @@ const ProgressCard: React.FC<ProgressCardProps> = ({
         
         <div className="mt-8 pt-6 border-t border-gray-100">
           <div className="flex justify-between items-center mb-3">
-            <span className="text-lg font-semibold text-gray-800">{t('progress_overall')}</span>
-            <span className="text-lg font-semibold text-gray-800">{Math.round(totalProgress)}%</span>
+            <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">{t('progress_overall')}</span>
+            <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">{Math.round(totalProgress)}%</span>
           </div>
-          <div className="w-full bg-gray-100 rounded-full h-4 overflow-hidden">
+          <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-4 overflow-hidden">
             <div 
               className={`h-4 rounded-full transition-all duration-1000 ease-out ${getProgressColor(totalProgress)}`}
               style={{ width: `${totalProgress}%` }}
             />
           </div>
           
-          <div className="mt-4 p-4 rounded-lg bg-gray-50 border border-gray-100">
-            <p className="text-sm text-gray-700 leading-relaxed">
+          <div className="mt-4 p-4 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
+            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
               {totalProgress < 30 && t('progress_msg_start')}
               {totalProgress >= 30 && totalProgress < 70 && t('progress_msg_mid')}
               {totalProgress >= 70 && t('progress_msg_ready')}

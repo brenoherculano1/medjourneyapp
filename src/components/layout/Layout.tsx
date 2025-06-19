@@ -1,12 +1,13 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import {
-  Home, ClipboardList, MessageSquare, Plane, CreditCard, User, Menu, LogOut, BookOpen, X, Globe
+  Home, ClipboardList, MessageSquare, Plane, CreditCard, User, Menu, LogOut, BookOpen, X, Sun, Moon
 } from 'lucide-react';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { useAppContext } from '../../contexts/AppContext';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../../firebase';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface LayoutProps {
   children: ReactNode;
@@ -47,6 +48,7 @@ const UsaFlagIcon = (props: { className?: string }) => (
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { t, i18n } = useTranslation();
+  const { isDark, toggleTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { currentPage, navigateTo } = useNavigation();
   const { user } = useAppContext();
@@ -78,31 +80,43 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
       {/* Sidebar para desktop */}
       <div className="hidden md:flex md:w-72 md:flex-col md:fixed md:inset-y-0">
-        <div className="flex-1 flex flex-col min-h-0 bg-white border-r border-gray-100 shadow-sm">
+        <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-gray-800 border-r border-gray-100 dark:border-gray-700 shadow-sm">
           <div className="flex-1 flex flex-col pt-8 pb-4 overflow-y-auto">
             <div className="flex items-center justify-between px-6">
               <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
                 MedJourney
               </h1>
-              <button 
-                onClick={() => i18n.changeLanguage(i18n.language === 'pt' ? 'en' : 'pt')}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-all duration-200 flex items-center gap-2 text-sm font-medium text-gray-600"
-              >
-                {i18n.language === 'pt' ? (
-                  <>
-                    <BrazilFlagIcon className="w-5 h-5" />
-                    <span className="sr-only">Switch to English</span>
-                  </>
-                ) : (
-                  <>
-                    <UsaFlagIcon className="w-5 h-5" />
-                    <span className="sr-only">Mudar para Português</span>
-                  </>
-                )}
-              </button>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={toggleTheme}
+                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
+                >
+                  {isDark ? (
+                    <Sun className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                  ) : (
+                    <Moon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                  )}
+                </button>
+                <button 
+                  onClick={() => i18n.changeLanguage(i18n.language === 'pt' ? 'en' : 'pt')}
+                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 flex items-center gap-2"
+                >
+                  {i18n.language === 'pt' ? (
+                    <>
+                      <BrazilFlagIcon className="w-5 h-5" />
+                      <span className="sr-only">Switch to English</span>
+                    </>
+                  ) : (
+                    <>
+                      <UsaFlagIcon className="w-5 h-5" />
+                      <span className="sr-only">Mudar para Português</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
             
             <nav className="mt-8 flex-1 px-4 space-y-1">
@@ -117,18 +131,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg
                       transition-all duration-200 group relative
                       ${isActive 
-                        ? 'text-blue-600 bg-blue-50' 
-                        : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
+                        ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/50 dark:text-blue-400' 
+                        : 'text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-700/50'
                       }
                     `}
                   >
                     <Icon className={`
                       h-5 w-5 mr-3 transition-transform duration-200
-                      ${isActive ? 'text-blue-600 transform scale-110' : 'text-gray-400 group-hover:text-blue-600'}
+                      ${isActive ? 'text-blue-600 dark:text-blue-400 transform scale-110' : 'text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400'}
                     `} />
                     {item.name}
                     {isActive && (
-                      <span className="absolute inset-y-0 left-0 w-1 bg-blue-600 rounded-r-full" />
+                      <span className="absolute inset-y-0 left-0 w-1 bg-blue-600 dark:bg-blue-400 rounded-r-full" />
                     )}
                   </button>
                 );
@@ -139,9 +153,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="flex-shrink-0 p-4">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center px-4 py-3 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 hover:text-red-600 transition-colors duration-200"
+              className="w-full flex items-center px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200"
             >
-              <LogOut className="h-5 w-5 mr-3 text-gray-400" />
+              <LogOut className="h-5 w-5 mr-3 text-gray-400 dark:text-gray-500" />
               {t('logout')}
             </button>
           </div>
@@ -151,15 +165,25 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Layout principal */}
       <div className="md:pl-72 flex flex-col flex-1">
         {/* Header mobile */}
-        <div className="md:hidden bg-white shadow-sm border-b border-gray-100">
+        <div className="md:hidden bg-white dark:bg-gray-800 shadow-sm border-b border-gray-100 dark:border-gray-700">
           <div className="px-4 py-4 flex items-center justify-between">
             <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
               MedJourney
             </h1>
             <div className="flex items-center gap-2">
               <button 
+                onClick={toggleTheme}
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
+              >
+                {isDark ? (
+                  <Sun className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                ) : (
+                  <Moon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                )}
+              </button>
+              <button 
                 onClick={() => i18n.changeLanguage(i18n.language === 'pt' ? 'en' : 'pt')}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-all duration-200 flex items-center gap-2"
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 flex items-center gap-2"
               >
                 {i18n.language === 'pt' ? (
                   <>
@@ -175,10 +199,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </button>
               <button
                 type="button"
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
                 onClick={toggleSidebar}
               >
-                <Menu className="h-6 w-6 text-gray-600" />
+                <Menu className="h-6 w-6 text-gray-600 dark:text-gray-300" />
               </button>
             </div>
           </div>
@@ -194,16 +218,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             />
             
             {/* Sidebar */}
-            <div className="fixed inset-y-0 left-0 w-72 bg-white z-50 shadow-xl transform transition-transform duration-300">
-              <div className="flex items-center justify-between p-4 border-b border-gray-100">
+            <div className="fixed inset-y-0 left-0 w-72 bg-white dark:bg-gray-800 z-50 shadow-xl transform transition-transform duration-300">
+              <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700">
                 <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
                   MedJourney
                 </h2>
                 <button
                   onClick={closeSidebar}
-                  className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+                  className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
                 >
-                  <X className="h-6 w-6 text-gray-600" />
+                  <X className="h-6 w-6 text-gray-600 dark:text-gray-300" />
                 </button>
               </div>
               
@@ -222,33 +246,33 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg
                         transition-all duration-200 group relative
                         ${isActive 
-                          ? 'text-blue-600 bg-blue-50' 
-                          : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
+                          ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/50 dark:text-blue-400' 
+                          : 'text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-700/50'
                         }
                       `}
                     >
                       <Icon className={`
                         h-5 w-5 mr-3 transition-transform duration-200
-                        ${isActive ? 'text-blue-600 transform scale-110' : 'text-gray-400 group-hover:text-blue-600'}
+                        ${isActive ? 'text-blue-600 dark:text-blue-400 transform scale-110' : 'text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400'}
                       `} />
                       {item.name}
                       {isActive && (
-                        <span className="absolute inset-y-0 left-0 w-1 bg-blue-600 rounded-r-full" />
+                        <span className="absolute inset-y-0 left-0 w-1 bg-blue-600 dark:bg-blue-400 rounded-r-full" />
                       )}
                     </button>
                   );
                 })}
               </nav>
               
-              <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100">
+              <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100 dark:border-gray-700">
                 <button
                   onClick={() => {
                     handleLogout();
                     closeSidebar();
                   }}
-                  className="w-full flex items-center px-4 py-3 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 hover:text-red-600 transition-colors duration-200"
+                  className="w-full flex items-center px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200"
                 >
-                  <LogOut className="h-5 w-5 mr-3 text-gray-400" />
+                  <LogOut className="h-5 w-5 mr-3 text-gray-400 dark:text-gray-500" />
                   {t('logout')}
                 </button>
               </div>

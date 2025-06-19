@@ -54,8 +54,8 @@ const InterviewPrep: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('interview_title')}</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('interview_title')}</h1>
+          <p className="text-gray-600 dark:text-gray-300 mt-1">
             {t('interview_subtitle')}
           </p>
         </div>
@@ -77,11 +77,11 @@ const InterviewPrep: React.FC = () => {
         <Card title={t('interview_edit_response', { category: editingResponse.category })}>
           <div className="space-y-4">
             <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">{t('interview_question')}</h3>
-              <p className="bg-gray-50 p-3 rounded text-gray-800 italic">{editingResponse.question}</p>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">{t('interview_question')}</h3>
+              <p className="bg-gray-50 dark:bg-gray-700 p-3 rounded text-gray-800 dark:text-gray-200 italic">{editingResponse.question}</p>
             </div>
             <div>
-              <label htmlFor="response" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="response" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {t('interview_your_response')}
               </label>
               <textarea
@@ -89,7 +89,7 @@ const InterviewPrep: React.FC = () => {
                 value={editedResponseText}
                 onChange={(e) => setEditedResponseText(e.target.value)}
                 rows={8}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
             <div className="flex justify-end space-x-3">

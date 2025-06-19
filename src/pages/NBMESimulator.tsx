@@ -187,17 +187,17 @@ export default function NBMESimulator() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-[80vh] bg-gray-50">
-      <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold text-blue-800 mb-2 flex items-center gap-2">📊 {t('nbme_title')}</h2>
-        <p className="text-gray-700 mb-6 text-sm">{t('nbme_subtitle')}</p>
+    <div className="flex justify-center items-center min-h-[80vh] bg-gray-50 dark:bg-gray-900">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 w-full max-w-md">
+        <h2 className="text-2xl font-bold text-blue-800 dark:text-blue-300 mb-2 flex items-center gap-2">📊 {t('nbme_title')}</h2>
+        <p className="text-gray-700 dark:text-gray-300 mb-6 text-sm">{t('nbme_subtitle')}</p>
 
         <input
           type="number"
           value={score ?? ""}
           onChange={(e) => setScore(Number(e.target.value))}
           placeholder={t('nbme_input_placeholder')}
-          className="w-full border border-gray-300 rounded-lg px-4 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 mb-2 transition"
+          className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 mb-2 transition"
           min={120}
           max={300}
         />
@@ -205,7 +205,7 @@ export default function NBMESimulator() {
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-4 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 mb-4 transition"
+          className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 mb-4 transition"
         />
         <div className="flex gap-2 mb-4">
           <button
@@ -223,36 +223,43 @@ export default function NBMESimulator() {
         </div>
 
         {result.length > 0 && (
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('nbme_result_title')}</h3>
-            <ul className="list-disc pl-5 text-gray-700">
-              {result.map((spec, idx) => (
-                <li key={idx}>{spec}</li>
+          <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+            <h3 className="font-semibold text-blue-800 dark:text-blue-200 mb-3">{t('nbme_result_title')}</h3>
+            <div className="space-y-2">
+              {result.map((specialty, index) => (
+                <div key={index} className="flex items-center text-blue-700 dark:text-blue-300">
+                  <span className="mr-2">✅</span>
+                  <span>{t(`nbme_${specialty.toLowerCase().replace(/\s+/g, '_')}`)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {tips && (
+          <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+            <h3 className="font-semibold text-yellow-800 dark:text-yellow-200 mb-3">{tips.title}</h3>
+            <ul className="space-y-2">
+              {tips.tips.map((tip, index) => (
+                <li key={index} className="text-sm text-yellow-700 dark:text-yellow-300 flex items-start">
+                  <span className="mr-2 mt-1">•</span>
+                  <span>{tip}</span>
+                </li>
               ))}
             </ul>
           </div>
         )}
 
-        {tips && (
-          <div className={`p-4 rounded-lg border-l-4 mb-4 ${tips.color === 'red-500' ? 'border-red-500 bg-red-50' : tips.color === 'orange-500' ? 'border-orange-500 bg-orange-50' : tips.color === 'yellow-500' ? 'border-yellow-500 bg-yellow-50' : tips.color === 'green-500' ? 'border-green-500 bg-green-50' : 'border-emerald-600 bg-emerald-50'}`}>
-            <div className="font-bold mb-2 flex items-center gap-2">{tips.emoji} {tips.title}</div>
-            <ul className="list-disc pl-5 text-gray-700 text-sm">
-              {tips.tips.map((tip, idx) => (
-                <li key={idx}>{tip}</li>
-              ))}
-            </ul>
-          </div>
-        )}
+        <div className="mt-8 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">{t('nbme_important')}</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{t('nbme_important_desc')}</p>
+        </div>
 
         {nbmeList.length >= 2 && (
           <div className="mb-8">
             <Line data={chartData} options={chartOptions} />
           </div>
         )}
-
-        <div className="mt-8 text-xs text-gray-500 border-t pt-4">
-          <strong>{t('nbme_important')}:</strong> {t('nbme_important_desc')}
-        </div>
       </div>
     </div>
   );

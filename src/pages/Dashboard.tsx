@@ -18,9 +18,9 @@ const Dashboard: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">{t('dashboard_welcome')}</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{t('dashboard_welcome')}</h1>
 
-          <p className="text-gray-600 mt-1">
+          <p className="text-gray-600 dark:text-gray-300 mt-1">
             {t('dashboard_subtitle')}
           </p>
         </div>
@@ -56,20 +56,20 @@ const Dashboard: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
         {/* Quick Actions */}
         <div className="md:col-span-6">
-          <div className="bg-white rounded-lg shadow-sm p-6 h-full">
-            <h2 className="text-lg font-medium text-gray-900 mb-6">{t('dashboard_quick_actions')}</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 h-full">
+            <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-6">{t('dashboard_quick_actions')}</h2>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <button 
                 onClick={() => navigateTo('applications')}
                 className="group w-full"
               >
-                <div className="border border-gray-200 hover:border-blue-200 hover:bg-blue-50 rounded-lg p-4 transition-all duration-200">
+                <div className="border border-gray-200 dark:border-gray-700 hover:border-blue-200 dark:hover:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/50 rounded-lg p-4 transition-all duration-200">
                   <div className="flex items-center">
-                    <div className="bg-blue-100 p-2 rounded-full mr-3">
-                      <Plus size={18} className="text-blue-600" />
+                    <div className="bg-blue-100 dark:bg-blue-900 p-2 rounded-full mr-3">
+                      <Plus size={18} className="text-blue-600 dark:text-blue-400" />
                     </div>
-                    <span className="font-medium text-gray-900 group-hover:text-blue-700">{t('dashboard_new_application')}</span>
+                    <span className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-700 dark:group-hover:text-blue-400">{t('dashboard_new_application')}</span>
                   </div>
                 </div>
               </button>
@@ -78,12 +78,12 @@ const Dashboard: React.FC = () => {
                 onClick={() => navigateTo('interviews')}
                 className="group w-full"
               >
-                <div className="border border-gray-200 hover:border-blue-200 hover:bg-blue-50 rounded-lg p-4 transition-all duration-200">
+                <div className="border border-gray-200 dark:border-gray-700 hover:border-blue-200 dark:hover:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/50 rounded-lg p-4 transition-all duration-200">
                   <div className="flex items-center">
-                    <div className="bg-green-100 p-2 rounded-full mr-3">
-                      <MessageSquare size={18} className="text-green-600" />
+                    <div className="bg-green-100 dark:bg-green-900 p-2 rounded-full mr-3">
+                      <MessageSquare size={18} className="text-green-600 dark:text-green-400" />
                     </div>
-                    <span className="font-medium text-gray-900 group-hover:text-blue-700">{t('dashboard_train_interview')}</span>
+                    <span className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-700 dark:group-hover:text-blue-400">{t('dashboard_train_interview')}</span>
                   </div>
                 </div>
               </button>

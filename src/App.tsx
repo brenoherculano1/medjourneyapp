@@ -23,6 +23,7 @@ import { stripePromise } from './lib/stripe';
 import { NavigationProvider, useNavigation } from './contexts/NavigationContext';
 import { AppProvider } from './contexts/AppContext';
 import { useUserDataPersistence } from './hooks/useUserDataPersistence';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 function InnerApp() {
   const { currentPage } = useNavigation();
@@ -85,13 +86,15 @@ function InnerApp() {
 
 function App() {
   return (
-    <Elements stripe={stripePromise}>
-      <NavigationProvider>
-        <AppProvider>
-          <InnerApp />
-        </AppProvider>
-      </NavigationProvider>
-    </Elements>
+    <ThemeProvider>
+      <Elements stripe={stripePromise}>
+        <NavigationProvider>
+          <AppProvider>
+            <InnerApp />
+          </AppProvider>
+        </NavigationProvider>
+      </Elements>
+    </ThemeProvider>
   );
 }
 

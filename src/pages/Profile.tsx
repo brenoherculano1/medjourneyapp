@@ -60,38 +60,38 @@ const Profile = () => {
 
   return (
     <div>
-      <h2 className="text-2xl font-semibold mb-6">{t('profile_personal_info')}</h2>
+      <h2 className="text-2xl font-semibold mb-6 text-gray-900 dark:text-white">{t('profile_personal_info')}</h2>
       <div className="space-y-4 max-w-xl">
         <input
           type="text"
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           placeholder={t('profile_full_name')}
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
         />
         <input
           type="email"
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           placeholder={t('profile_email')}
           value={email}
           disabled
         />
         <input
           type="text"
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           placeholder={t('profile_university')}
           value={university}
           onChange={(e) => setUniversity(e.target.value)}
         />
         <input
           type="text"
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           placeholder={t('profile_graduation_year')}
           value={graduationYear}
           onChange={(e) => setGraduationYear(e.target.value)}
         />
         <button
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
           onClick={handleSave}
         >
           {t('profile_save_changes')}

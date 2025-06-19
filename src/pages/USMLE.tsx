@@ -83,7 +83,7 @@ const USMLE: React.FC = () => {
 
   return (
     <div className="max-w-xl mx-auto space-y-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-4">USMLE Tracker</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">USMLE Tracker</h1>
       {progress === 100 ? (
         <div className="relative">
           {/* Confete simples */}
@@ -102,14 +102,14 @@ const USMLE: React.FC = () => {
           )}
           <Card className="space-y-6 border-4 border-blue-700 animate-fade-in">
             <div className="flex flex-col items-center mb-4">
-              <span className="text-2xl md:text-3xl font-bold text-center text-blue-900" style={{textShadow: '0 1px 6px rgba(0,0,0,0.10), 0 0px 1px #fff'}}>
+              <span className="text-2xl md:text-3xl font-bold text-center text-blue-900 dark:text-blue-100" style={{textShadow: '0 1px 6px rgba(0,0,0,0.10), 0 0px 1px #fff'}}>
                 🎉 {t('usmle_congrats_title')} 🎉
               </span>
               <div className="flex items-center gap-2 mt-4 justify-center">
                 <MiniUsaFlag /> <MiniUsaFlag /> <MiniUsaFlag />
               </div>
             </div>
-            <div className="mt-6 mb-4 text-center text-lg font-medium text-gray-800">
+            <div className="mt-6 mb-4 text-center text-lg font-medium text-gray-800 dark:text-gray-100">
               {t('usmle_question')}
             </div>
             {!answer && (
@@ -121,7 +121,7 @@ const USMLE: React.FC = () => {
                   {t('usmle_answer_done')}
                 </button>
                 <button
-                  className="bg-white border-2 border-blue-600 hover:bg-blue-50 text-blue-700 font-semibold px-6 py-2 rounded-full shadow transition"
+                  className="bg-white dark:bg-gray-700 border-2 border-blue-600 hover:bg-blue-50 dark:hover:bg-gray-600 text-blue-700 dark:text-blue-300 font-semibold px-6 py-2 rounded-full shadow transition"
                   onClick={() => setAnswer('notyet')}
                 >
                   {t('usmle_answer_notyet')}
@@ -129,13 +129,13 @@ const USMLE: React.FC = () => {
               </div>
             )}
             {answer === 'done' && (
-              <div className="mt-6 text-center text-base font-medium text-blue-800 animate-fade-in">
+              <div className="text-center text-lg font-medium text-blue-800 dark:text-blue-200 animate-fade-in">
                 {t('usmle_msg_done')}
               </div>
             )}
             {answer === 'notyet' && (
               <div className="mt-6 text-center animate-fade-in">
-                <div className="text-base font-medium text-blue-800 mb-4">
+                <div className="text-base font-medium text-blue-800 dark:text-blue-200 mb-4">
                   {t('usmle_msg_notyet')}
                 </div>
                 <a
@@ -149,13 +149,13 @@ const USMLE: React.FC = () => {
               </div>
             )}
             <div className="mb-4 mt-8">
-              <div className="w-full bg-gray-200 rounded-full h-4 mb-2">
+              <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4 mb-2">
                 <div
                   className="bg-gradient-to-r from-blue-800 to-red-700 h-4 rounded-full animate-pulse"
                   style={{ width: '100%' }}
                 />
               </div>
-              <div className="text-right text-base font-bold text-blue-700">{t('usmle_100_complete')}</div>
+              <div className="text-right text-base font-bold text-blue-700 dark:text-blue-300">{t('usmle_100_complete')}</div>
             </div>
           </Card>
         </div>
@@ -163,11 +163,11 @@ const USMLE: React.FC = () => {
         <Card className="space-y-6">
           {/* Step 1 */}
           <div>
-            <label className="block font-medium text-gray-700 mb-1">Step 1</label>
+            <label className="block font-medium text-gray-700 dark:text-white mb-1">Step 1</label>
             <select
               value={step1}
               onChange={e => setStep1(e.target.value as any)}
-              className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500"
             >
               {step1Options.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -176,9 +176,9 @@ const USMLE: React.FC = () => {
           </div>
           {/* Step 2 CK */}
           <div>
-            <label className="block font-medium text-gray-700 mb-1">Step 2 CK</label>
+            <label className="block font-medium text-gray-700 dark:text-white mb-1">Step 2 CK</label>
             <div className="flex items-center space-x-4">
-              <label className="flex items-center">
+              <label className="flex items-center text-gray-700 dark:text-white">
                 <input
                   type="checkbox"
                   checked={step2Done}
@@ -193,7 +193,7 @@ const USMLE: React.FC = () => {
                   placeholder={t('usmle_score')}
                   value={step2Score}
                   onChange={e => setStep2Score(e.target.value)}
-                  className="w-24 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="w-24 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   min={0}
                   max={300}
                 />
@@ -202,10 +202,10 @@ const USMLE: React.FC = () => {
           </div>
           {/* OET */}
           <div>
-            <label className="block font-medium text-gray-700 mb-1">OET (Occupational English Test)</label>
+            <label className="block font-medium text-gray-700 dark:text-white mb-1">OET (Occupational English Test)</label>
             <div className="flex space-x-4">
               {oetOptions.map(opt => (
-                <label key={opt.value} className="flex items-center">
+                <label key={opt.value} className="flex items-center text-gray-700 dark:text-white">
                   <input
                     type="radio"
                     checked={oet === opt.value}
@@ -219,10 +219,10 @@ const USMLE: React.FC = () => {
           </div>
           {/* ECFMG */}
           <div>
-            <label className="block font-medium text-gray-700 mb-1">ECFMG</label>
+            <label className="block font-medium text-gray-700 dark:text-white mb-1">ECFMG</label>
             <div className="flex space-x-4">
               {ecfmgOptions.map(opt => (
-                <label key={opt.value} className="flex items-center">
+                <label key={opt.value} className="flex items-center text-gray-700 dark:text-white">
                   <input
                     type="radio"
                     checked={ecfmg === opt.value}
@@ -236,10 +236,10 @@ const USMLE: React.FC = () => {
           </div>
           {/* EPIC */}
           <div>
-            <label className="block font-medium text-gray-700 mb-1">EPIC</label>
+            <label className="block font-medium text-gray-700 dark:text-white mb-1">EPIC</label>
             <div className="flex space-x-4">
               {epicOptions.map(opt => (
-                <label key={opt.value} className="flex items-center">
+                <label key={opt.value} className="flex items-center text-gray-700 dark:text-white">
                   <input
                     type="radio"
                     checked={epic === opt.value}
@@ -253,14 +253,14 @@ const USMLE: React.FC = () => {
           </div>
           {/* Progresso */}
           <div>
-            <label className="block font-medium text-gray-700 mb-1">{t('usmle_progress')}</label>
-            <div className="w-full bg-gray-200 rounded-full h-4">
+            <label className="block font-medium text-gray-700 dark:text-white mb-1">{t('usmle_progress')}</label>
+            <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4">
               <div
                 className="bg-blue-500 h-4 rounded-full transition-all duration-300"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <div className="text-right text-sm font-medium text-blue-700 mt-1">{progress}%</div>
+            <div className="text-right text-sm font-medium text-blue-700 dark:text-blue-300 mt-1">{progress}%</div>
           </div>
         </Card>
       }

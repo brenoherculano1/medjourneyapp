@@ -75,8 +75,8 @@ const VisaPlanner: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('visa_title')}</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('visa_title')}</h1>
+          <p className="text-gray-600 dark:text-gray-300 mt-1">
             {t('visa_subtitle')}
           </p>
         </div>
@@ -118,8 +118,8 @@ const VisaPlanner: React.FC = () => {
           {visaPlanning.length === 0 ? (
             <Card>
               <div className="text-center py-10">
-                <h3 className="text-lg font-medium text-gray-900 mb-2">{t('visa_none_added')}</h3>
-                <p className="text-gray-500 mb-6">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">{t('visa_none_added')}</h3>
+                <p className="text-gray-500 dark:text-gray-400 mb-6">
                   {t('visa_none_desc')}
                 </p>
                 <Button
@@ -137,8 +137,8 @@ const VisaPlanner: React.FC = () => {
                 <div className="space-y-4">
                   <div className="flex justify-between">
                     <div>
-                      <h3 className="text-xl font-semibold text-gray-900">{plan.country}</h3>
-                      <p className="text-gray-600">{t('visa_type')}: {plan.visaType}</p>
+                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{plan.country}</h3>
+                      <p className="text-gray-600 dark:text-gray-300">{t('visa_type')}: {plan.visaType}</p>
                     </div>
                     <div>
                       {statusBadge(plan.status)}
@@ -147,18 +147,18 @@ const VisaPlanner: React.FC = () => {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 pt-2">
                     <div>
-                      <h4 className="text-sm font-medium text-gray-700">{t('visa_details')}</h4>
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('visa_details')}</h4>
                       <div className="mt-2 space-y-1">
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
                           <span className="font-medium">{t('visa_appointment')}:</span> {formatDate(plan.appointmentDate)}
                         </p>
-                        <p className="text-sm text-gray-600 flex items-center space-x-2">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center space-x-2">
                           <span className="font-medium">{t('visa_embassy_link')}:</span>
                           <a 
                             href={plan.embassyLink} 
                             target="_blank" 
                             rel="noopener noreferrer" 
-                            className="text-blue-600 hover:text-blue-800 truncate max-w-xs inline-block"
+                            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 truncate max-w-xs inline-block"
                           >
                             {plan.embassyLink}
                           </a>
@@ -167,15 +167,15 @@ const VisaPlanner: React.FC = () => {
                     </div>
                     
                     <div>
-                      <h4 className="text-sm font-medium text-gray-700">{t('travel_details')}</h4>
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('travel_details')}</h4>
                       <div className="mt-2 space-y-1">
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
                           <span className="font-medium">{t('travel_accommodation')}:</span> {plan.accommodation ? translateField(plan.accommodation) : t('not_defined')}
                         </p>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
                           <span className="font-medium">{t('travel_insurance')}:</span> {plan.insurance ? translateField(plan.insurance) : t('not_defined')}
                         </p>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
                           <span className="font-medium">{t('travel_flight')}:</span> {plan.flight ? translateField(plan.flight) : t('not_defined')}
                         </p>
                       </div>
@@ -184,8 +184,8 @@ const VisaPlanner: React.FC = () => {
                   
                   {plan.notes && (
                     <div className="pt-2">
-                      <h4 className="text-sm font-medium text-gray-700">{t('visa_notes')}</h4>
-                      <p className="text-sm text-gray-600 mt-1">{translateField(plan.notes)}</p>
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('visa_notes')}</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{translateField(plan.notes)}</p>
                     </div>
                   )}
                   

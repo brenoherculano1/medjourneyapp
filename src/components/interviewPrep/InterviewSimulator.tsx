@@ -102,22 +102,22 @@ const InterviewSimulator: React.FC<InterviewSimulatorProps> = ({ onSaveResponse 
       {!isSimulating ? (
         <div className="space-y-6">
           <div>
-            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {t('interview_select_category')}
             </label>
             <select
               id="category"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value as InterviewCategory | 'Todas')}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500"
             >
               <option value="Todas">{t('interview_all_categories')}</option>
             </select>
           </div>
           
-          <div className="bg-blue-50 rounded-lg p-4 text-center">
-            <h3 className="font-medium text-blue-800 mb-2">{t('interview_how_it_works_title')}</h3>
-            <p className="text-blue-700 text-sm">
+          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 text-center">
+            <h3 className="font-medium text-blue-800 dark:text-blue-200 mb-2">{t('interview_how_it_works_title')}</h3>
+            <p className="text-blue-700 dark:text-blue-300 text-sm">
               {t('interview_how_it_works_desc')}
             </p>
           </div>
@@ -137,32 +137,32 @@ const InterviewSimulator: React.FC<InterviewSimulatorProps> = ({ onSaveResponse 
       ) : (
         <div className="space-y-6">
           <div className="flex justify-between items-center mb-4">
-            <span className="text-sm font-medium text-gray-700 bg-gray-100 px-3 py-1 rounded-full">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
               {questionsQueue[currentIndex]?.category}
             </span>
             
             <div className="flex items-center">
-              <Clock size={16} className="text-gray-500 mr-1" />
-              <span className="text-sm font-medium">{formatTime(timeLeft)}</span>
+              <Clock size={16} className="text-gray-500 dark:text-gray-400 mr-1" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{formatTime(timeLeft)}</span>
             </div>
           </div>
           
           {/* Timer bar */}
-          <div className="w-full bg-gray-200 rounded-full h-2.5 mb-6">
+          <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5 mb-6">
             <div 
               className={`h-2.5 rounded-full transition-all duration-1000 ease-linear ${getTimerColor()}`} 
               style={{ width: `${timerProgress}%` }}
             ></div>
           </div>
           
-          <div className="bg-gray-50 p-4 rounded-lg mb-4">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('interview_question_number', { number: currentIndex + 1 })}</h3>
-            <p className="text-gray-800 italic">{questionsQueue[currentIndex]?.question}</p>
+          <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg mb-4">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">{t('interview_question_number', { number: currentIndex + 1 })}</h3>
+            <p className="text-gray-800 dark:text-gray-200 italic">{questionsQueue[currentIndex]?.question}</p>
           </div>
           
           <div>
             <div className="flex justify-between items-center mb-2">
-              <label htmlFor="response" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="response" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 {t('interview_your_response')}
               </label>
               <div className="flex items-center">
@@ -171,7 +171,7 @@ const InterviewSimulator: React.FC<InterviewSimulatorProps> = ({ onSaveResponse 
                 ) : (
                   <MicOff size={16} className="text-red-500 mr-1" />
                 )}
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-gray-500 dark:text-gray-400">
                   {timerActive ? t('interview_recording') : t('interview_time_up')}
                 </span>
               </div>
@@ -181,7 +181,7 @@ const InterviewSimulator: React.FC<InterviewSimulatorProps> = ({ onSaveResponse 
               value={response}
               onChange={(e) => setResponse(e.target.value)}
               rows={6}
-              className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500"
               placeholder={t('interview_placeholder')}
               disabled={!timerActive}
             />

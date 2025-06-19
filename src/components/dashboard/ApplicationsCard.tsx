@@ -101,26 +101,26 @@ const ApplicationsCard: React.FC<ApplicationsCardProps> = ({ applications }) => 
           {upcomingApplications.map((application) => (
             <div 
               key={application.id} 
-              className="p-4 bg-white rounded-lg border border-gray-100 hover:border-blue-200 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-md"
+              className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 hover:border-blue-200 dark:hover:border-blue-600 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-md"
             >
               <div className="flex items-start justify-between mb-3">
-                <h4 className="font-medium text-gray-900">{application.hospitalName}</h4>
+                <h4 className="font-medium text-gray-900 dark:text-gray-100">{application.hospitalName}</h4>
                 <StatusBadge status={application.status} />
               </div>
               
               <div className="space-y-2">
-                <div className="flex items-center text-sm text-gray-600">
+                <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
                   <School size={16} className="mr-2" />
                   <span>{application.type}</span>
                 </div>
                 
-                <div className="flex items-center text-sm text-gray-600">
+                <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
                   <Calendar size={16} className="mr-2" />
                   <span>{t('applications_deadline')}: {formatDate(application.deadline)}</span>
                 </div>
                 
                 {application.notes && (
-                  <p className="text-sm text-gray-500 mt-2 line-clamp-2">{application.notes}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 line-clamp-2">{application.notes}</p>
                 )}
               </div>
             </div>
@@ -128,8 +128,8 @@ const ApplicationsCard: React.FC<ApplicationsCardProps> = ({ applications }) => 
         </div>
       ) : (
         <div className="text-center py-8">
-          <p className="text-gray-500 font-medium">{t('applications_none')}</p>
-          <p className="text-sm text-gray-400 mt-1">{t('applications_add_first')}</p>
+          <p className="text-gray-500 dark:text-gray-400 font-medium">{t('applications_none')}</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">{t('applications_add_first')}</p>
         </div>
       )}
     </Card>

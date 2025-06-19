@@ -16,11 +16,11 @@ const Card: React.FC<CardProps> = ({
   footer,
 }) => {
   return (
-    <div className={`bg-white rounded-xl shadow-sm border border-gray-100 transition-all duration-300 ${className}`}>
+    <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 transition-all duration-300 ${className}`}>
       {(title || headerActions) && (
-        <div className="flex justify-between items-center p-6 border-b border-gray-100">
+        <div className="flex justify-between items-center p-6 border-b border-gray-100 dark:border-gray-700">
           {title && (
-            <h3 className="text-lg font-semibold text-gray-900 tracking-tight">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 tracking-tight">
               {title}
             </h3>
           )}
@@ -35,7 +35,7 @@ const Card: React.FC<CardProps> = ({
       <div className="p-6">{children}</div>
       
       {footer && (
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 rounded-b-xl">
+        <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-100 dark:border-gray-700 rounded-b-xl">
           {footer}
         </div>
       )}
