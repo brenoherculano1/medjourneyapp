@@ -94,29 +94,27 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     }
   }, [applicationsLoaded]);
 
-  // Salvar aplicações no Firestore sempre que mudar, mas só depois do carregamento inicial e quando readyToSave === true
+  // Salvar applications no Firestore sempre que mudar, só quando carregado e pronto para salvar
   useEffect(() => {
-    if (!user?.uid || !readyToSave) return;
-    if (applicationsLoading) return;
-    console.log('Tentando salvar aplicações no Firestore:', { uid: user.uid, applications });
+    if (!user?.uid || !applicationsLoaded || !readyToSave) return;
+    // Evita sobrescrever com array vazio
+    if (applications.length === 0) return;
+    console.log('Salvando no Firestore:', applications);
     const saveApplications = async () => {
       try {
-        await setDoc(doc(db, 'applications', user.uid), {
-          applications,
-          lastUpdated: new Date().toISOString(),
-        });
-        console.log('Salvo com sucesso no Firestore!');
+        await setDoc(doc(db, 'users', user.uid), { applications }, { merge: true });
+        console.log('✅ Aplicações salvas no Firestore com sucesso');
       } catch (error) {
         console.error('Erro ao salvar aplicações no Firestore:', error);
-        alert('Erro ao salvar aplicações no Firestore: ' + (error?.message || error));
       }
     };
     saveApplications();
-  }, [applications, user?.uid, readyToSave, applicationsLoading]);
+  }, [applications, user?.uid, applicationsLoaded, readyToSave]);
   const [interviewResponses, setInterviewResponses] = useState<InterviewResponse[]>(mockInterviewResponses);
   const [visaPlanning, setVisaPlanning] = useState<VisaPlanning[]>(mockVisaPlanning);
   const [streakData, setStreakData] = useState<StreakData | null>(null);
 
+  // addApplication garante atualização correta do estado
   const addApplication = (application: Omit<Application, 'id' | 'createdAt' | 'updatedAt'>) => {
     const now = new Date().toISOString();
     const newApplication: Application = {
@@ -125,9 +123,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       createdAt: now,
       updatedAt: now,
     };
-    const updatedApplications = [...applications, newApplication];
-    console.log('addApplication chamado:', { application, newApplication, updatedApplications });
-    setApplications(updatedApplications);
+    setApplications([...applications, newApplication]);
   };
 
   const updateApplication = (id: string, updatedFields: Partial<Application>) => {
