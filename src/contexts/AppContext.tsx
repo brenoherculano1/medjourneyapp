@@ -53,38 +53,37 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 
   // Carregar aplicações do Firestore ao logar
   useEffect(() => {
-    let isMounted = true;
-    if (!user?.uid) {
-      setApplications([]);
-      setApplicationsLoading(false);
-      setApplicationsLoaded(true);
-      setReadyToSave(false);
-      return;
-    }
-    setApplicationsLoading(true);
+    if (!user?.uid) return;
     setApplicationsLoaded(false);
     setReadyToSave(false);
     const fetchApplications = async () => {
       try {
-        const ref = doc(db, 'applications', user.uid);
+        const ref = doc(db, 'users', user.uid);
         const snapshot = await getDoc(ref);
         if (snapshot.exists()) {
-          if (isMounted) setApplications(snapshot.data().applications || []);
+          const data = snapshot.data();
+          if (data.applications) {
+            setApplications(data.applications);
+            console.log('Carregado do Firestore:', data.applications);
+          } else {
+            // Só setar [] se for absolutamente necessário
+            // setApplications([]); // Não setar vazio por padrão
+            console.log('Carregado do Firestore: nenhum campo applications encontrado');
+          }
         } else {
-          if (isMounted) setApplications([]);
+          // Só setar [] se for absolutamente necessário
+          // setApplications([]);
+          console.log('Carregado do Firestore: documento não existe');
         }
       } catch (error) {
         console.error('Erro ao buscar aplicações do Firestore:', error);
-        if (isMounted) setApplications([]);
+        // Só setar [] se for absolutamente necessário
+        // setApplications([]);
       } finally {
-        if (isMounted) {
-          setApplicationsLoading(false);
-          setApplicationsLoaded(true);
-        }
+        setApplicationsLoaded(true);
       }
     };
     fetchApplications();
-    return () => { isMounted = false; };
   }, [user?.uid]);
 
   // 2. Só define readyToSave como true depois do carregamento inicial
