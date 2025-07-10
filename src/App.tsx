@@ -35,7 +35,6 @@ function InnerApp() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setIsLoggedIn(!!firebaseUser);
       if (firebaseUser) {
         setUser({
           id: firebaseUser.uid,
@@ -45,8 +44,10 @@ function InnerApp() {
           subscription: null,
           subscriptionExpiry: null,
         });
+        setIsLoggedIn(true);
       } else {
-        setUser(null);
+        setUser(null); // <- Fundamental para liberar o loading!
+        setIsLoggedIn(false);
       }
     });
 

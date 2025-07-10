@@ -61,8 +61,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 
   // Carregar aplicações do Firestore ao logar
   useEffect(() => {
-    if (authLoading) return; // 1. Só carrega após autenticação
-    if (!user?.uid) return;
+    if (user === null) return; // 3. Se user === null, retorna imediatamente
+    if (!user?.uid) return; // 4. Se user.uid não existe, não faz nada
     setApplicationsLoaded(false);
     setReadyToSave(false);
     const fetchApplications = async () => {
@@ -88,7 +88,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       }
     };
     fetchApplications();
-  }, [user, authLoading]);
+  }, [user]);
 
   // 2. Só define readyToSave como true depois do carregamento inicial
   useEffect(() => {
@@ -186,8 +186,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   };
 
   console.log('USER CONTEXT:', user);
-  // Evitar renderizar estágios enquanto user for null ou authLoading
-  if (authLoading || user === null) {
+  // Evitar renderizar estágios enquanto não carregou
+  if (!applicationsLoaded) {
     return <div className="p-8 text-center text-gray-600">Carregando estágios...</div>;
   }
   return (
