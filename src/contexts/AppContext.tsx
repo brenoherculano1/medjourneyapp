@@ -48,12 +48,14 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [applications, setApplications] = useState<Application[]>([]);
   const [applicationsLoading, setApplicationsLoading] = useState(true);
+  const [applicationsLoaded, setApplicationsLoaded] = useState(false);
 
   // Carregar aplicações do Firestore ao logar
   useEffect(() => {
     if (!user?.uid) {
       setApplications([]);
       setApplicationsLoading(false);
+      setApplicationsLoaded(true);
       return;
     }
     setApplicationsLoading(true);
@@ -71,14 +73,15 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         setApplications([]);
       } finally {
         setApplicationsLoading(false);
+        setApplicationsLoaded(true);
       }
     };
     fetchApplications();
   }, [user?.uid]);
 
-  // Salvar aplicações no Firestore sempre que mudar
+  // Salvar aplicações no Firestore sempre que mudar, mas só depois do carregamento inicial
   useEffect(() => {
-    if (!user?.uid) return;
+    if (!user?.uid || !applicationsLoaded) return;
     console.log('Tentando salvar aplicações no Firestore:', { uid: user.uid, applications });
     const saveApplications = async () => {
       try {
@@ -92,7 +95,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       }
     };
     saveApplications();
-  }, [applications, user?.uid]);
+  }, [applications, user?.uid, applicationsLoaded]);
   const [interviewResponses, setInterviewResponses] = useState<InterviewResponse[]>(mockInterviewResponses);
   const [visaPlanning, setVisaPlanning] = useState<VisaPlanning[]>(mockVisaPlanning);
   const [streakData, setStreakData] = useState<StreakData | null>(null);
