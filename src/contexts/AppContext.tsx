@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { Application, InterviewResponse, VisaPlanning, User } from '../types';
 import { mockUser, mockApplications, mockInterviewResponses, mockVisaPlanning } from '../utils/mockData';
+import { db } from '../firebase';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { useEffect } from 'react';
 
 interface StreakData {
   streak: number;
@@ -44,6 +47,39 @@ interface AppProviderProps {
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [applications, setApplications] = useState<Application[]>(mockApplications);
+
+  // Carregar aplicações do Firestore ao logar
+  useEffect(() => {
+    if (!user?.uid) return;
+    const fetchApplications = async () => {
+      try {
+        const ref = doc(db, 'applications', user.uid);
+        const snapshot = await getDoc(ref);
+        if (snapshot.exists()) {
+          setApplications(snapshot.data().applications || []);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar aplicações do Firestore:', error);
+      }
+    };
+    fetchApplications();
+  }, [user?.uid]);
+
+  // Salvar aplicações no Firestore sempre que mudar
+  useEffect(() => {
+    if (!user?.uid) return;
+    const saveApplications = async () => {
+      try {
+        await setDoc(doc(db, 'applications', user.uid), {
+          applications,
+          lastUpdated: new Date().toISOString(),
+        });
+      } catch (error) {
+        console.error('Erro ao salvar aplicações no Firestore:', error);
+      }
+    };
+    saveApplications();
+  }, [applications, user?.uid]);
   const [interviewResponses, setInterviewResponses] = useState<InterviewResponse[]>(mockInterviewResponses);
   const [visaPlanning, setVisaPlanning] = useState<VisaPlanning[]>(mockVisaPlanning);
   const [streakData, setStreakData] = useState<StreakData | null>(null);
@@ -111,6 +147,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     setVisaPlanning(visaPlanning.filter((plan) => plan.id !== id));
   };
 
+  console.log('USER CONTEXT:', user);
   return (
     <AppContext.Provider
       value={{

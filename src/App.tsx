@@ -21,24 +21,37 @@ import { Elements } from '@stripe/react-stripe-js';
 import { stripePromise } from './lib/stripe';
 
 import { NavigationProvider, useNavigation } from './contexts/NavigationContext';
-import { AppProvider } from './contexts/AppContext';
+import { AppProvider, useAppContext } from './contexts/AppContext';
 import { useUserDataPersistence } from './hooks/useUserDataPersistence';
 import { ThemeProvider } from './contexts/ThemeContext';
 
 function InnerApp() {
   const { currentPage } = useNavigation();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+  const { setUser } = useAppContext();
 
   // Persistência global dos dados do usuário (como progresso e preferências)
   useUserDataPersistence();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setIsLoggedIn(!!user);
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setIsLoggedIn(!!firebaseUser);
+      if (firebaseUser) {
+        setUser({
+          id: firebaseUser.uid,
+          uid: firebaseUser.uid,
+          name: firebaseUser.displayName || '',
+          email: firebaseUser.email || '',
+          subscription: null,
+          subscriptionExpiry: null,
+        });
+      } else {
+        setUser(null);
+      }
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [setUser]);
 
   if (isLoggedIn === null) {
     return <div className="p-8 text-center text-gray-600">Carregando...</div>;
