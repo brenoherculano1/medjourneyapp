@@ -52,6 +52,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 
   // Carregar aplicações do Firestore ao logar
   useEffect(() => {
+    let isMounted = true;
     if (!user?.uid) {
       setApplications([]);
       setApplicationsLoading(false);
@@ -59,29 +60,35 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       return;
     }
     setApplicationsLoading(true);
+    setApplicationsLoaded(false);
     const fetchApplications = async () => {
       try {
         const ref = doc(db, 'applications', user.uid);
         const snapshot = await getDoc(ref);
         if (snapshot.exists()) {
-          setApplications(snapshot.data().applications || []);
+          if (isMounted) setApplications(snapshot.data().applications || []);
         } else {
-          setApplications([]);
+          if (isMounted) setApplications([]);
         }
       } catch (error) {
         console.error('Erro ao buscar aplicações do Firestore:', error);
-        setApplications([]);
+        if (isMounted) setApplications([]);
       } finally {
-        setApplicationsLoading(false);
-        setApplicationsLoaded(true);
+        if (isMounted) {
+          setApplicationsLoading(false);
+          setApplicationsLoaded(true);
+        }
       }
     };
     fetchApplications();
+    return () => { isMounted = false; };
   }, [user?.uid]);
 
   // Salvar aplicações no Firestore sempre que mudar, mas só depois do carregamento inicial
   useEffect(() => {
     if (!user?.uid || !applicationsLoaded) return;
+    // Não salva imediatamente após o carregamento inicial, só em mudanças subsequentes
+    if (applicationsLoading) return;
     console.log('Tentando salvar aplicações no Firestore:', { uid: user.uid, applications });
     const saveApplications = async () => {
       try {
@@ -95,7 +102,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       }
     };
     saveApplications();
-  }, [applications, user?.uid, applicationsLoaded]);
+  }, [applications, user?.uid, applicationsLoaded, applicationsLoading]);
   const [interviewResponses, setInterviewResponses] = useState<InterviewResponse[]>(mockInterviewResponses);
   const [visaPlanning, setVisaPlanning] = useState<VisaPlanning[]>(mockVisaPlanning);
   const [streakData, setStreakData] = useState<StreakData | null>(null);
