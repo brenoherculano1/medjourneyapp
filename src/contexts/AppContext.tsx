@@ -87,7 +87,6 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   // Salvar aplicações no Firestore sempre que mudar, mas só depois do carregamento inicial
   useEffect(() => {
     if (!user?.uid || !applicationsLoaded) return;
-    // Não salva imediatamente após o carregamento inicial, só em mudanças subsequentes
     if (applicationsLoading) return;
     console.log('Tentando salvar aplicações no Firestore:', { uid: user.uid, applications });
     const saveApplications = async () => {
@@ -99,6 +98,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         console.log('Salvo com sucesso no Firestore!');
       } catch (error) {
         console.error('Erro ao salvar aplicações no Firestore:', error);
+        alert('Erro ao salvar aplicações no Firestore: ' + (error?.message || error));
       }
     };
     saveApplications();
@@ -115,7 +115,9 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       createdAt: now,
       updatedAt: now,
     };
-    setApplications([...applications, newApplication]);
+    const updatedApplications = [...applications, newApplication];
+    console.log('addApplication chamado:', { application, newApplication, updatedApplications });
+    setApplications(updatedApplications);
   };
 
   const updateApplication = (id: string, updatedFields: Partial<Application>) => {
