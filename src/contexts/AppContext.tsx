@@ -50,9 +50,18 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [applicationsLoaded, setApplicationsLoaded] = useState(false); // 1. Marca quando o carregamento inicial foi concluído
   const [readyToSave, setReadyToSave] = useState(false); // 2. Só true depois de applicationsLoaded
   const [applicationsLoading, setApplicationsLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(true); // 4. Loading global de autenticação
+
+  // Efeito para controlar o loading de autenticação
+  useEffect(() => {
+    // Simula o loading do Firebase Auth
+    // Se o user já está definido (mesmo que null), loading termina
+    setAuthLoading(false);
+  }, [user]);
 
   // Carregar aplicações do Firestore ao logar
   useEffect(() => {
+    if (authLoading) return; // 1. Só carrega após autenticação
     if (!user?.uid) return;
     setApplicationsLoaded(false);
     setReadyToSave(false);
@@ -66,25 +75,20 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
             setApplications(data.applications);
             console.log('Carregado do Firestore:', data.applications);
           } else {
-            // Só setar [] se for absolutamente necessário
-            // setApplications([]); // Não setar vazio por padrão
             console.log('Carregado do Firestore: nenhum campo applications encontrado');
           }
         } else {
-          // Só setar [] se for absolutamente necessário
-          // setApplications([]);
           console.log('Carregado do Firestore: documento não existe');
         }
       } catch (error) {
         console.error('Erro ao buscar aplicações do Firestore:', error);
-        // Só setar [] se for absolutamente necessário
-        // setApplications([]);
+        alert('Erro ao buscar aplicações do Firestore: ' + (error?.message || error));
       } finally {
         setApplicationsLoaded(true);
       }
     };
     fetchApplications();
-  }, [user?.uid]);
+  }, [user, authLoading]);
 
   // 2. Só define readyToSave como true depois do carregamento inicial
   useEffect(() => {
@@ -182,7 +186,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   };
 
   console.log('USER CONTEXT:', user);
-  if (applicationsLoading) {
+  // Evitar renderizar estágios enquanto user for null ou authLoading
+  if (authLoading || user === null) {
     return <div className="p-8 text-center text-gray-600">Carregando estágios...</div>;
   }
   return (
