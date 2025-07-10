@@ -47,8 +47,9 @@ interface AppProviderProps {
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [applications, setApplications] = useState<Application[]>([]);
+  const [applicationsLoaded, setApplicationsLoaded] = useState(false); // 1. Marca quando o carregamento inicial foi concluído
+  const [readyToSave, setReadyToSave] = useState(false); // 2. Só true depois de applicationsLoaded
   const [applicationsLoading, setApplicationsLoading] = useState(true);
-  const [applicationsLoaded, setApplicationsLoaded] = useState(false);
 
   // Carregar aplicações do Firestore ao logar
   useEffect(() => {
@@ -57,10 +58,12 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       setApplications([]);
       setApplicationsLoading(false);
       setApplicationsLoaded(true);
+      setReadyToSave(false);
       return;
     }
     setApplicationsLoading(true);
     setApplicationsLoaded(false);
+    setReadyToSave(false);
     const fetchApplications = async () => {
       try {
         const ref = doc(db, 'applications', user.uid);
@@ -84,9 +87,16 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     return () => { isMounted = false; };
   }, [user?.uid]);
 
-  // Salvar aplicações no Firestore sempre que mudar, mas só depois do carregamento inicial
+  // 2. Só define readyToSave como true depois do carregamento inicial
   useEffect(() => {
-    if (!user?.uid || !applicationsLoaded) return;
+    if (applicationsLoaded) {
+      setReadyToSave(true);
+    }
+  }, [applicationsLoaded]);
+
+  // Salvar aplicações no Firestore sempre que mudar, mas só depois do carregamento inicial e quando readyToSave === true
+  useEffect(() => {
+    if (!user?.uid || !readyToSave) return;
     if (applicationsLoading) return;
     console.log('Tentando salvar aplicações no Firestore:', { uid: user.uid, applications });
     const saveApplications = async () => {
@@ -102,7 +112,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       }
     };
     saveApplications();
-  }, [applications, user?.uid, applicationsLoaded, applicationsLoading]);
+  }, [applications, user?.uid, readyToSave, applicationsLoading]);
   const [interviewResponses, setInterviewResponses] = useState<InterviewResponse[]>(mockInterviewResponses);
   const [visaPlanning, setVisaPlanning] = useState<VisaPlanning[]>(mockVisaPlanning);
   const [streakData, setStreakData] = useState<StreakData | null>(null);
