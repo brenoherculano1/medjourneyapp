@@ -46,20 +46,31 @@ interface AppProviderProps {
 
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [applications, setApplications] = useState<Application[]>(mockApplications);
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [applicationsLoading, setApplicationsLoading] = useState(true);
 
   // Carregar aplicações do Firestore ao logar
   useEffect(() => {
-    if (!user?.uid) return;
+    if (!user?.uid) {
+      setApplications([]);
+      setApplicationsLoading(false);
+      return;
+    }
+    setApplicationsLoading(true);
     const fetchApplications = async () => {
       try {
         const ref = doc(db, 'applications', user.uid);
         const snapshot = await getDoc(ref);
         if (snapshot.exists()) {
           setApplications(snapshot.data().applications || []);
+        } else {
+          setApplications([]);
         }
       } catch (error) {
         console.error('Erro ao buscar aplicações do Firestore:', error);
+        setApplications([]);
+      } finally {
+        setApplicationsLoading(false);
       }
     };
     fetchApplications();
@@ -68,12 +79,14 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   // Salvar aplicações no Firestore sempre que mudar
   useEffect(() => {
     if (!user?.uid) return;
+    console.log('Tentando salvar aplicações no Firestore:', { uid: user.uid, applications });
     const saveApplications = async () => {
       try {
         await setDoc(doc(db, 'applications', user.uid), {
           applications,
           lastUpdated: new Date().toISOString(),
         });
+        console.log('Salvo com sucesso no Firestore!');
       } catch (error) {
         console.error('Erro ao salvar aplicações no Firestore:', error);
       }
@@ -148,6 +161,9 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   };
 
   console.log('USER CONTEXT:', user);
+  if (applicationsLoading) {
+    return <div className="p-8 text-center text-gray-600">Carregando estágios...</div>;
+  }
   return (
     <AppContext.Provider
       value={{
