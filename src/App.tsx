@@ -102,9 +102,8 @@ function App() {
     <ThemeProvider>
       <Elements stripe={stripePromise}>
         <NavigationProvider>
-          <AppProvider>
-            <InnerApp />
-          </AppProvider>
+          {/* Remover AppProvider daqui, pois já está em main.tsx */}
+          <InnerApp />
         </NavigationProvider>
       </Elements>
     </ThemeProvider>
