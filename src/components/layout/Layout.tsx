@@ -197,13 +197,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   </>
                 )}
               </button>
-              <button
-                type="button"
+            <button
+              type="button"
                 className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-                onClick={toggleSidebar}
-              >
+              onClick={toggleSidebar}
+            >
                 <Menu className="h-6 w-6 text-gray-600 dark:text-gray-300" />
-              </button>
+            </button>
             </div>
           </div>
         </div>

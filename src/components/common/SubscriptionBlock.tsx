@@ -41,29 +41,29 @@ const SubscriptionBlock: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-      <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center">
+  <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+    <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center">
         <div className="flex justify-end mb-2">
           <button onClick={() => i18n.changeLanguage('pt')} className={`px-3 py-1 rounded-l ${i18n.language === 'pt' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>PT</button>
           <button onClick={() => i18n.changeLanguage('en')} className={`px-3 py-1 rounded-r ${i18n.language === 'en' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>EN</button>
         </div>
         <h2 className="text-2xl font-bold text-blue-700 mb-4">{t('restricted_access')}</h2>
-        <p className="mb-6 text-gray-700">
+      <p className="mb-6 text-gray-700">
           {t('platform_exclusive')}<br />
           {t('active_subscription')}
-        </p>
+      </p>
         <Button
           variant="primary"
           size="lg"
           onClick={handleSubscribe}
           disabled={loading}
           className="w-full"
-        >
+      >
           {loading ? t('loading') : t('subscribe_annual')}
         </Button>
-      </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default SubscriptionBlock; 

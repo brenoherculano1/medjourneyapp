@@ -206,14 +206,14 @@ const USMLE: React.FC = () => {
             <div className="flex space-x-4">
               {oetOptions.map(opt => (
                 <label key={opt.value} className="flex items-center text-gray-700 dark:text-white">
-                  <input
-                    type="radio"
+                <input
+                  type="radio"
                     checked={oet === opt.value}
                     onChange={() => setOet(opt.value as any)}
-                    className="mr-2"
-                  />
+                  className="mr-2"
+                />
                   {opt.label}
-                </label>
+              </label>
               ))}
             </div>
           </div>
@@ -223,14 +223,14 @@ const USMLE: React.FC = () => {
             <div className="flex space-x-4">
               {ecfmgOptions.map(opt => (
                 <label key={opt.value} className="flex items-center text-gray-700 dark:text-white">
-                  <input
-                    type="radio"
+                <input
+                  type="radio"
                     checked={ecfmg === opt.value}
                     onChange={() => setEcfmg(opt.value as any)}
-                    className="mr-2"
-                  />
+                  className="mr-2"
+                />
                   {opt.label}
-                </label>
+              </label>
               ))}
             </div>
           </div>
@@ -240,14 +240,14 @@ const USMLE: React.FC = () => {
             <div className="flex space-x-4">
               {epicOptions.map(opt => (
                 <label key={opt.value} className="flex items-center text-gray-700 dark:text-white">
-                  <input
-                    type="radio"
+                <input
+                  type="radio"
                     checked={epic === opt.value}
                     onChange={() => setEpic(opt.value as any)}
-                    className="mr-2"
-                  />
+                  className="mr-2"
+                />
                   {opt.label}
-                </label>
+              </label>
               ))}
             </div>
           </div>

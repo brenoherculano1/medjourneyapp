@@ -141,40 +141,40 @@ const PricingCards: React.FC = () => {
       </div>
       <h1 className="text-3xl font-bold text-gray-900 text-center mb-8">{t('choose_plan')}</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {pricingPlans.map((plan, index) => (
-          <Card
-            key={index}
-            className={`
-              relative overflow-hidden transition-all duration-300
-              ${plan.highlighted ? 'border-2 border-blue-500 transform hover:-translate-y-1' : 'border border-gray-200 hover:border-blue-200'}
-            `}
-          >
-            {plan.highlighted && (
-              <div className="absolute top-0 right-0 bg-blue-500 text-white px-3 py-1 text-xs font-bold uppercase transform translate-y-0 translate-x-0 rotate-0">
+      {pricingPlans.map((plan, index) => (
+        <Card
+          key={index}
+          className={`
+            relative overflow-hidden transition-all duration-300
+            ${plan.highlighted ? 'border-2 border-blue-500 transform hover:-translate-y-1' : 'border border-gray-200 hover:border-blue-200'}
+          `}
+        >
+          {plan.highlighted && (
+            <div className="absolute top-0 right-0 bg-blue-500 text-white px-3 py-1 text-xs font-bold uppercase transform translate-y-0 translate-x-0 rotate-0">
                 {t('best_value')}
-              </div>
-            )}
-            <div className="text-center mb-6">
-              <div className="flex justify-center mb-3">
-                {plan.icon}
-              </div>
+            </div>
+          )}
+          <div className="text-center mb-6">
+            <div className="flex justify-center mb-3">
+              {plan.icon}
+            </div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">{t(plan.title)}</h3>
               <p className="text-gray-500 dark:text-gray-300 mt-2">{plan.description}</p>
-            </div>
-            <div className="flex justify-center items-baseline my-8">
+          </div>
+          <div className="flex justify-center items-baseline my-8">
               <span className="text-4xl font-extrabold text-gray-900 dark:text-white">{plan.price}</span>
               <span className="ml-1 text-xl text-gray-500 dark:text-gray-300">{plan.period}</span>
-            </div>
-            <ul className="space-y-4 mb-8">
-              {plan.features.map((feature, idx) => (
-                <li key={idx} className="flex items-start">
+          </div>
+          <ul className="space-y-4 mb-8">
+            {plan.features.map((feature, idx) => (
+              <li key={idx} className="flex items-start">
                   <span className={`flex-shrink-0 h-5 w-5 rounded-full ${feature.included ? 'text-green-500' : 'text-gray-400 dark:text-gray-500'} mr-2`}>
-                    {feature.included ? <Check size={20} /> : '–'}
-                  </span>
+                  {feature.included ? <Check size={20} /> : '–'}
+                </span>
                   <span className={`text-sm ${feature.included ? 'text-gray-700 dark:text-gray-200' : 'text-gray-500 dark:text-gray-400'}`}>{feature.text}</span>
-                </li>
-              ))}
-            </ul>
+              </li>
+            ))}
+          </ul>
             {plan.planType === 'monthly' ? (
               <div className="w-full flex justify-center mt-4">
                 <stripe-buy-button
@@ -197,18 +197,18 @@ const PricingCards: React.FC = () => {
                 ></stripe-buy-button>
               </div>
             ) : (
-              <Button
-                variant={plan.highlighted ? 'primary' : 'outline'}
-                size="lg"
-                className="w-full"
+          <Button
+            variant={plan.highlighted ? 'primary' : 'outline'}
+            size="lg"
+            className="w-full"
                 onClick={() => handleCheckout(plan)}
                 disabled={loading === plan.planType}
-              >
+          >
                 {loading === plan.planType ? 'Carregando...' : t(plan.buttonText)}
-              </Button>
+          </Button>
             )}
-          </Card>
-        ))}
+        </Card>
+      ))}
       </div>
     </div>
   );

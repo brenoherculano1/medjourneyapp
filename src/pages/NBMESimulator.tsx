@@ -52,64 +52,64 @@ export default function NBMESimulator() {
   const [nbmeList, setNbmeList] = useState<NBMEEntry[]>([]);
 
   const studyTips = useMemo(() => [
-    {
-      range: [0, 199],
-      color: 'red-500',
-      emoji: '🔴',
+  {
+    range: [0, 199],
+    color: 'red-500',
+    emoji: '🔴',
       title: t('nbme_tip_title_0'),
-      tips: [
+    tips: [
         t('nbme_tip_0_0'),
         t('nbme_tip_0_1'),
         t('nbme_tip_0_2'),
         t('nbme_tip_0_3'),
         t('nbme_tip_0_4'),
-      ]
-    },
-    {
-      range: [200, 219],
-      color: 'orange-500',
-      emoji: '🟠',
+    ]
+  },
+  {
+    range: [200, 219],
+    color: 'orange-500',
+    emoji: '🟠',
       title: t('nbme_tip_title_1'),
-      tips: [
+    tips: [
         t('nbme_tip_1_0'),
         t('nbme_tip_1_1'),
         t('nbme_tip_1_2'),
         t('nbme_tip_1_3'),
         t('nbme_tip_1_4'),
-      ]
-    },
-    {
-      range: [220, 239],
-      color: 'yellow-500',
-      emoji: '🟡',
+    ]
+  },
+  {
+    range: [220, 239],
+    color: 'yellow-500',
+    emoji: '🟡',
       title: t('nbme_tip_title_2'),
-      tips: [
+    tips: [
         t('nbme_tip_2_0'),
         t('nbme_tip_2_1'),
         t('nbme_tip_2_2'),
         t('nbme_tip_2_3'),
         t('nbme_tip_2_4'),
-      ]
-    },
-    {
-      range: [240, 259],
-      color: 'green-500',
-      emoji: '🟢',
+    ]
+  },
+  {
+    range: [240, 259],
+    color: 'green-500',
+    emoji: '🟢',
       title: t('nbme_tip_title_3'),
-      tips: [
+    tips: [
         t('nbme_tip_3_0'),
         t('nbme_tip_3_1'),
         t('nbme_tip_3_2'),
         t('nbme_tip_3_3'),
         t('nbme_tip_3_4'),
-      ]
-    },
-    {
-      range: [260, 300],
-      color: 'emerald-600',
-      emoji: '🟩',
+    ]
+  },
+  {
+    range: [260, 300],
+    color: 'emerald-600',
+    emoji: '🟩',
       title: t('nbme_tip_title_4'),
-      tips: [
+    tips: [
         t('nbme_tip_4_0'),
         t('nbme_tip_4_1'),
         t('nbme_tip_4_2'),
@@ -236,7 +236,7 @@ export default function NBMESimulator() {
           </div>
         )}
 
-        {tips && (
+            {tips && (
           <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
             <h3 className="font-semibold text-yellow-800 dark:text-yellow-200 mb-3">{tips.title}</h3>
             <ul className="space-y-2">
@@ -245,8 +245,8 @@ export default function NBMESimulator() {
                   <span className="mr-2 mt-1">•</span>
                   <span>{tip}</span>
                 </li>
-              ))}
-            </ul>
+                  ))}
+                </ul>
           </div>
         )}
 

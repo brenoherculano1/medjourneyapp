@@ -26,7 +26,7 @@ const ProgressCard: React.FC<ProgressCardProps> = ({
     applications.filter((app) => app.status === 'Aceito').length,
     applications.length || 1
   );
-
+  
   const interviewProgress = calculateProgress(
     interviewResponses.length,
     applications.length || 1
@@ -50,7 +50,7 @@ const ProgressCard: React.FC<ProgressCardProps> = ({
     if (progress >= 30) return <Clock className="w-5 h-5 text-yellow-500" />;
     return <AlertTriangle className="w-5 h-5 text-blue-500" />;
   };
-
+  
   const renderProgressBar = (progress: number, label: string) => (
     <div className="transform transition-all duration-500 hover:scale-[1.02]">
       <div className="flex justify-between items-center mb-2">
@@ -61,7 +61,7 @@ const ProgressCard: React.FC<ProgressCardProps> = ({
         <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{Math.round(progress)}%</span>
       </div>
       <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
-        <div
+        <div 
           className={`h-2.5 rounded-full transition-all duration-1000 ease-out ${getProgressColor(progress)}`}
           style={{ width: `${progress}%` }}
         />

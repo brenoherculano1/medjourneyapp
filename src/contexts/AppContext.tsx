@@ -50,45 +50,42 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [applicationsLoaded, setApplicationsLoaded] = useState(false); // 1. Marca quando o carregamento inicial foi concluído
   const [readyToSave, setReadyToSave] = useState(false); // 2. Só true depois de applicationsLoaded
   const [applicationsLoading, setApplicationsLoading] = useState(true);
-  const [authLoading, setAuthLoading] = useState(true); // 4. Loading global de autenticação
-
-  // Efeito para controlar o loading de autenticação
-  useEffect(() => {
-    // Simula o loading do Firebase Auth
-    // Se o user já está definido (mesmo que null), loading termina
-    setAuthLoading(false);
-  }, [user]);
 
   // Carregar aplicações do Firestore ao logar
   useEffect(() => {
-    if (user === null) return; // 3. Se user === null, retorna imediatamente
-    if (!user?.uid) return; // 4. Se user.uid não existe, não faz nada
+    let isMounted = true;
+    if (!user?.uid) {
+      setApplications([]);
+      setApplicationsLoading(false);
+      setApplicationsLoaded(true);
+      setReadyToSave(false);
+      return;
+    }
+    setApplicationsLoading(true);
     setApplicationsLoaded(false);
     setReadyToSave(false);
     const fetchApplications = async () => {
       try {
-        const ref = doc(db, 'users', user.uid);
+        const ref = doc(db, 'applications', user.uid);
         const snapshot = await getDoc(ref);
         if (snapshot.exists()) {
-          const data = snapshot.data();
-          if (data.applications) {
-            setApplications(data.applications);
-            console.log('Carregado do Firestore:', data.applications);
-          } else {
-            console.log('Carregado do Firestore: nenhum campo applications encontrado');
-          }
+          if (isMounted) setApplications(snapshot.data().applications || []);
         } else {
-          console.log('Carregado do Firestore: documento não existe');
+          if (isMounted) setApplications([]);
         }
       } catch (error) {
         console.error('Erro ao buscar aplicações do Firestore:', error);
-        alert('Erro ao buscar aplicações do Firestore: ' + (error?.message || error));
+        if (isMounted) setApplications([]);
       } finally {
-        setApplicationsLoaded(true);
+        if (isMounted) {
+          setApplicationsLoading(false);
+          setApplicationsLoaded(true);
+        }
       }
     };
     fetchApplications();
-  }, [user]);
+    return () => { isMounted = false; };
+  }, [user?.uid]);
 
   // 2. Só define readyToSave como true depois do carregamento inicial
   useEffect(() => {
@@ -186,8 +183,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   };
 
   console.log('USER CONTEXT:', user);
-  // Evitar renderizar estágios enquanto não carregou
-  if (!applicationsLoaded) {
+  if (applicationsLoading) {
     return <div className="p-8 text-center text-gray-600">Carregando estágios...</div>;
   }
   return (
